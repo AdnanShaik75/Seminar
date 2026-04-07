@@ -1,0 +1,3219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coincidence Measurements — MSc Physics Seminar</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050d18;
+    --bg2: #0a1628;
+    --bg3: #0f1f38;
+    --card: #0d1e35;
+    --accent: #3b82f6;
+    --accent2: #60a5fa;
+    --accent3: #93c5fd;
+    --gold: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --white: #f0f8ff;
+    --muted: #64748b;
+    --text: #cbd5e1;
+    --border: rgba(59,130,246,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── STARFIELD ─── */
+  #stars-canvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; opacity: 0.5;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 2.5rem;
+    background: rgba(5,13,24,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem; color: var(--accent2);
+    letter-spacing: 0.08em;
+  }
+  .nav-links { display: flex; gap: 0.3rem; }
+  .nav-links a {
+    font-size: 0.78rem; color: var(--muted);
+    text-decoration: none; padding: 0.35rem 0.75rem;
+    border-radius: 6px; transition: all 0.2s;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--accent2); background: rgba(59,130,246,0.1); }
+
+  /* ─── SECTIONS ─── */
+  section {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    padding: 7rem 2rem 4rem;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ─── HERO ─── */
+  #hero {
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; flex-direction: column;
+    padding-top: 0; min-height: 100vh;
+  }
+  .hero-badge {
+    display: inline-block; margin-bottom: 1.5rem;
+    padding: 0.35rem 1rem; border-radius: 999px;
+    border: 1px solid var(--accent); background: rgba(59,130,246,0.08);
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    color: var(--accent2); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+    line-height: 1.08; color: var(--white);
+    max-width: 900px; margin-bottom: 1rem;
+  }
+  .hero-title span { color: var(--accent2); }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--muted); max-width: 580px;
+    margin-bottom: 2.5rem;
+  }
+  .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    padding: 0.75rem 1.8rem; border-radius: 8px; font-size: 0.9rem;
+    font-weight: 500; cursor: pointer; transition: all 0.22s;
+    text-decoration: none; border: none; display: inline-block;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.35); }
+  .btn-ghost { border: 1px solid var(--border); color: var(--accent3); background: transparent; }
+  .btn-ghost:hover { background: rgba(59,130,246,0.08); transform: translateY(-2px); }
+
+  /* ─── SECTION HEADERS ─── */
+  .sec-label {
+    font-family: 'Space Mono', monospace; font-size: 0.72rem;
+    color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .sec-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--white); margin-bottom: 0.8rem; line-height: 1.15;
+  }
+  .sec-desc { color: var(--muted); max-width: 600px; margin-bottom: 3rem; font-size: 1.02rem; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.6rem 1.8rem;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: rgba(59,130,246,0.4); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
+  .card-icon { font-size: 1.6rem; margin-bottom: 0.8rem; }
+  .card-title { font-weight: 700; color: var(--white); margin-bottom: 0.4rem; font-size: 1.05rem; }
+  .card-text { color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.4rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
+
+  /* ─── PULSE DEMO ─── */
+  #pulse-demo {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem; margin-bottom: 2rem;
+  }
+  #pulse-demo canvas { width: 100%; border-radius: 8px; display: block; }
+  .demo-controls { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-top: 1.2rem; }
+  .demo-btn {
+    padding: 0.5rem 1.2rem; border-radius: 7px; border: none;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+    font-weight: 600; transition: all 0.18s;
+  }
+  .demo-btn-blue { background: var(--accent); color: white; }
+  .demo-btn-blue:hover { background: var(--accent2); }
+  .demo-btn-green { background: var(--green); color: white; }
+  .demo-btn-green:hover { background: #34d399; }
+  .demo-btn-red { background: var(--red); color: white; }
+  .demo-btn-red:hover { background: #f87171; }
+  .demo-btn-gray { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+  .demo-btn-gray:hover { background: var(--card); }
+  .demo-label { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--accent2); }
+  .status-box {
+    padding: 0.5rem 1rem; border-radius: 8px;
+    font-family: 'Space Mono', monospace; font-size: 0.8rem;
+    background: var(--bg3); border: 1px solid var(--border);
+  }
+  .status-accept { border-color: var(--green); color: var(--green); background: rgba(16,185,129,0.08); }
+  .status-reject { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.08); }
+
+  /* ─── AND GATE DIAGRAM ─── */
+  #and-gate-wrap { overflow-x: auto; }
+  #and-gate-wrap svg { display: block; margin: 0 auto; }
+
+  /* ─── TAC INTERACTIVE ─── */
+  .tac-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem;
+  }
+  .tac-row { display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap; }
+  .tac-controls { flex: 1; min-width: 240px; }
+  .tac-chart { flex: 2; min-width: 300px; }
+  .slider-group { margin-bottom: 1.2rem; }
+  .slider-label {
+    display: flex; justify-content: space-between;
+    font-size: 0.85rem; color: var(--accent3); margin-bottom: 0.4rem;
+    font-family: 'Space Mono', monospace;
+  }
+  input[type=range] {
+    width: 100%; accent-color: var(--accent); cursor: pointer;
+    height: 4px;
+  }
+
+  /* ─── FORMULA ─── */
+  .formula-box {
+    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(15,31,56,0.9));
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 14px; padding: 2rem 2.5rem; margin: 2rem 0;
+    text-align: center;
+  }
+  .formula {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--gold); letter-spacing: 0.05em;
+    margin: 0.8rem 0;
+  }
+  .formula-terms {
+    display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;
+    margin-top: 1rem;
+  }
+  .term { font-size: 0.85rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .term span { color: var(--gold); }
+
+  /* ─── FORMULA CALCULATOR ─── */
+  .calc-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.8rem; margin-top: 1.5rem;
+  }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .input-group label {
+    display: block; font-size: 0.8rem; color: var(--accent3);
+    font-family: 'Space Mono', monospace; margin-bottom: 0.35rem;
+  }
+  .input-group input {
+    width: 100%; padding: 0.5rem 0.75rem; border-radius: 7px;
+    background: var(--bg3); border: 1px solid var(--border);
+    color: var(--white); font-family: 'Space Mono', monospace;
+    font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+  }
+  .input-group input:focus { border-color: var(--accent); }
+  .calc-result {
+    padding: 0.9rem 1.2rem; border-radius: 8px;
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.25);
+    font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--gold);
+  }
+
+  /* ─── APPLICATIONS ─── */
+  .app-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.6rem; cursor: pointer;
+    transition: all 0.22s; position: relative; overflow: hidden;
+  }
+  .app-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent); transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .app-card:hover::before { transform: scaleX(1); }
+  .app-card:hover { border-color: rgba(59,130,246,0.4); transform: translateY(-3px); }
+  .app-card-title { font-weight: 700; color: var(--white); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .app-card-body { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+  .app-detail {
+    margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);
+    color: var(--text); font-size: 0.88rem; display: none;
+  }
+  .app-card.open .app-detail { display: block; }
+  .app-tag {
+    display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px;
+    font-size: 0.72rem; font-family: 'Space Mono', monospace;
+    background: rgba(59,130,246,0.12); color: var(--accent2);
+    border: 1px solid rgba(59,130,246,0.2); margin-right: 0.4rem; margin-bottom: 0.3rem;
+  }
+
+  /* ─── CERN ─── */
+  .trigger-flow {
+    display: flex; align-items: center; gap: 0.5rem;
+    flex-wrap: wrap; margin: 1.5rem 0; justify-content: center;
+  }
+  .trigger-step {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 10px; padding: 1rem 1.2rem; text-align: center;
+    min-width: 130px; flex: 1; max-width: 180px;
+  }
+  .trigger-step .rate {
+    font-family: 'Space Mono', monospace; font-size: 0.78rem;
+    color: var(--gold); margin-bottom: 0.3rem;
+  }
+  .trigger-step .name { font-weight: 700; color: var(--white); font-size: 0.9rem; }
+  .trigger-step .desc { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+  .trigger-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+
+  /* ─── QUIZ ─── */
+  .quiz-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem; max-width: 700px; margin: 0 auto;
+  }
+  .quiz-q { font-size: 1.05rem; color: var(--white); margin-bottom: 1.2rem; font-weight: 500; }
+  .quiz-options { display: flex; flex-direction: column; gap: 0.7rem; }
+  .quiz-opt {
+    padding: 0.75rem 1.2rem; border-radius: 9px;
+    border: 1px solid var(--border); background: var(--bg3);
+    cursor: pointer; transition: all 0.18s; font-size: 0.92rem;
+    color: var(--text); text-align: left;
+  }
+  .quiz-opt:hover { border-color: var(--accent); color: var(--white); background: rgba(59,130,246,0.08); }
+  .quiz-opt.correct { border-color: var(--green); background: rgba(16,185,129,0.1); color: var(--green); }
+  .quiz-opt.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: var(--red); }
+  .quiz-feedback { margin-top: 1rem; padding: 0.8rem 1rem; border-radius: 8px; font-size: 0.9rem; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: rgba(16,185,129,0.1); border: 1px solid var(--green); color: var(--green); }
+  .quiz-feedback.bad { background: rgba(239,68,68,0.1); border: 1px solid var(--red); color: var(--red); }
+  .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.4rem; }
+  .quiz-progress { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--muted); }
+  .quiz-score-box { text-align: center; padding: 2rem; }
+  .quiz-score-num { font-family: 'DM Serif Display', serif; font-size: 4rem; color: var(--accent2); }
+
+  /* ─── REFERENCES ─── */
+  .ref-list { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .ref-list li {
+    padding: 0.8rem 1.2rem; border-radius: 8px;
+    background: var(--card); border: 1px solid var(--border);
+    font-size: 0.85rem; display: flex; gap: 0.8rem; align-items: flex-start;
+  }
+  .ref-num {
+    flex-shrink: 0; width: 1.5rem; height: 1.5rem;
+    background: rgba(59,130,246,0.15); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--accent2);
+  }
+  .ref-text { color: var(--muted); line-height: 1.5; }
+  .ref-text strong { color: var(--text); }
+
+  /* ─── SCROLLSPY ─── */
+  section { opacity: 0; transform: translateY(28px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  section.visible { opacity: 1; transform: translateY(0); }
+  #hero { opacity: 1; transform: none; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2rem; text-align: center;
+    font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--muted);
+  }
+
+  /* ─── HIGHLIGHT ─── */
+  .hl { color: var(--accent2); font-weight: 600; }
+  .hl-gold { color: var(--gold); font-weight: 600; }
+  .hl-green { color: var(--green); font-weight: 600; }
+
+  .intro-panel { display: none; }
+  .intro-panel.active { display: block; }
+
+  /* ─── SIGNAL CHAIN ANIMATION ─── */
+  @keyframes chainSlideIn { from{opacity:0;transform:translateX(-12px)} to{opacity:1;transform:translateX(0)} }
+  .chain-step { animation:chainSlideIn 0.5s ease forwards; opacity:0; }
+  .chain-step:nth-child(1) { animation-delay:0.1s; }
+  .chain-step:nth-child(2) { animation-delay:0.3s; }
+  .chain-step:nth-child(3) { animation-delay:0.5s; }
+  .chain-step:nth-child(4) { animation-delay:0.7s; }
+
+  /* ─── TIMING DEMOS ─── */
+  .demo-tabs {
+    display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.2rem;
+  }
+  .dtab {
+    padding: 0.45rem 0.9rem; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--bg3); color: var(--muted); font-size: 0.78rem;
+    font-family: 'Space Mono', monospace; cursor: pointer; transition: all 0.18s;
+    letter-spacing: 0.04em;
+  }
+  .dtab:hover { color: var(--accent2); border-color: var(--accent); }
+  .dtab.active { background: rgba(59,130,246,0.15); color: var(--accent2); border-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .timing-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem 1.6rem;
+  }
+  .timing-label {
+    font-family: 'Space Mono', monospace; font-size: 0.76rem;
+    color: var(--accent2); letter-spacing: 0.08em; margin-bottom: 1rem;
+  }
+
+  /* ─── CHAIN TOOLTIP ─── */
+  #chain-tooltip {
+    position: fixed;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    max-width: 280px;
+    min-width: 210px;
+  }
+  #chain-tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .chain-tip-inner {
+    background: #0d1e35;
+    border: 1px solid rgba(59,130,246,0.45);
+    border-radius: 12px;
+    padding: 1rem 1.1rem 0.9rem;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.1);
+    backdrop-filter: blur(12px);
+  }
+  .chain-tip-icon { font-size: 1.3rem; margin-bottom: 0.35rem; }
+  .chain-tip-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem; font-weight: 700;
+    color: #fff; letter-spacing: 0.07em;
+    margin-bottom: 0.5rem;
+  }
+  .chain-tip-accent {
+    display: inline-block;
+    width: 28px; height: 3px; border-radius: 2px;
+    margin-bottom: 0.6rem;
+  }
+  .chain-tip-body {
+    font-size: 0.82rem; color: #94a3b8;
+    line-height: 1.6;
+  }
+  .chain-tip-body strong { color: #cbd5e1; }
+  .chain-tip-tag {
+    display: inline-block; margin-top: 0.6rem;
+    padding: 0.18rem 0.55rem; border-radius: 4px;
+    font-family: 'Space Mono', monospace; font-size: 0.67rem;
+    background: rgba(59,130,246,0.12); color: #60a5fa;
+    border: 1px solid rgba(59,130,246,0.22);
+    margin-right: 0.3rem;
+  }
+  .chain-tip-close {
+    position: absolute; top: 0.5rem; right: 0.6rem;
+    background: none; border: none; color: #64748b;
+    font-size: 1rem; cursor: pointer; padding: 0.1rem 0.3rem;
+    line-height: 1;
+  }
+  .chain-tip-close:hover { color: #94a3b8; }
+
+  /* canvas cursor hint */
+  #chain-canvas { cursor: pointer; }
+    nav { padding: 0.8rem 1rem; }
+    .nav-links a { padding: 0.3rem 0.5rem; font-size: 0.7rem; }
+    section { padding: 6rem 1rem 3rem; }
+    .calc-grid { grid-template-columns: 1fr; }
+    .trigger-flow { flex-direction: column; align-items: center; }
+    .trigger-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+
+<!-- BLOCK INFO TOOLTIP -->
+<div id="chain-tooltip">
+  <div class="chain-tip-inner" style="position:relative;">
+    <button class="chain-tip-close" onclick="closeChainTip()">✕</button>
+    <div class="chain-tip-icon" id="ct-icon"></div>
+    <div class="chain-tip-title" id="ct-title"></div>
+    <div class="chain-tip-accent" id="ct-accent"></div>
+    <div class="chain-tip-body" id="ct-body"></div>
+    <div id="ct-tags"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-logo">⚛ COINCIDENCE.PHYS</div>
+  <div class="nav-links">
+    <a href="#intro" class="nav-link">Intro</a>
+    <a href="#detection" class="nav-link">Detection</a>
+    <a href="#logic" class="nav-link">Logic</a>
+    <a href="#timing" class="nav-link">Timing</a>
+    <a href="#accidentals" class="nav-link">Accidentals</a>
+    <a href="#applications" class="nav-link">Applications</a>
+    <a href="#cern" class="nav-link">CERN</a>
+    <a href="#quiz" class="nav-link">Quiz</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge">Shaik Adnan · MSc 1st Year · Reg. No P250411</div>
+  <h1 class="hero-title">
+    Coincidence<br><span>Measurements</span><br>in Nuclear &amp; Particle Physics
+  </h1>
+  <p class="hero-sub">An interactive journey through the technique that powers everything from student labs to the Large Hadron Collider.</p>
+  <div class="hero-buttons">
+    <a href="#intro" class="btn btn-primary">Begin Seminar →</a>
+    <a href="#quiz" class="btn btn-ghost">Take the Quiz</a>
+  </div>
+</section>
+
+<!-- ──────────── SECTION 1: INTRO ──────────── -->
+<section id="intro">
+<div class="container">
+  <div class="sec-label">01 — Introduction</div>
+  <h2 class="sec-title">Why Coincidence?</h2>
+  <p class="sec-desc">Nuclear experiments are drowned in background noise. These five demos show exactly why coincidence is the solution — from the atom up.</p>
+
+  <!-- INTRO TABS -->
+  <div class="demo-tabs">
+    <button class="dtab active" onclick="switchIntroTab(0)">① Source &amp; Detectors</button>
+    <button class="dtab" onclick="switchIntroTab(1)">② Background Filter</button>
+    <button class="dtab" onclick="switchIntroTab(2)">③ Two Clocks</button>
+    <button class="dtab" onclick="switchIntroTab(3)">④ Signal vs Noise</button>
+  </div>
+
+  <!-- ① SOURCE & DETECTORS -->
+  <div class="intro-panel active" id="itab0">
+    <div class="timing-card">
+      <div class="timing-label">☢ LIVE SOURCE — Particles emitting in all directions. Only correlated hits register.</div>
+      <canvas id="src-canvas" height="300" style="width:100%;border-radius:10px;display:block;"></canvas>
+      <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:1rem;align-items:center;">
+        <div id="src-stats" style="font-family:'Space Mono',monospace;font-size:0.8rem;display:flex;gap:1.5rem;flex-wrap:wrap;"></div>
+        <div style="margin-left:auto;display:flex;gap:0.6rem;">
+          <button class="demo-btn demo-btn-gray" onclick="srcToggle()" id="src-btn">⏸ Pause</button>
+        </div>
+      </div>
+      <div style="margin-top:0.9rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+        The radioactive <span class="hl-gold">source (☢)</span> emits particles in all directions. Only particles hitting <span class="hl">both Detector A and B</span> within Δt are recorded as coincidences. Random background hits (cosmic rays) fire <em>one</em> detector only — and are silently rejected.
+      </div>
+    </div>
+  </div>
+
+  <!-- ② BACKGROUND FILTER -->
+  <div class="intro-panel" id="itab1">
+    <div class="timing-card">
+      <div class="timing-label">📉 OSCILLOSCOPE — Raw signal vs coincidence-filtered output</div>
+      <div style="display:flex;gap:0.7rem;margin-bottom:0.9rem;flex-wrap:wrap;align-items:center;">
+        <button class="demo-btn" id="osc-raw-btn" onclick="oscMode('raw')" style="background:var(--red);color:#fff;font-size:0.78rem;padding:0.4rem 1rem;">No Coincidence</button>
+        <button class="demo-btn" id="osc-filt-btn" onclick="oscMode('filtered')" style="background:var(--bg3);color:var(--text);border:1px solid var(--border);font-size:0.78rem;padding:0.4rem 1rem;">With Coincidence</button>
+        <div id="osc-verdict" style="font-family:'Space Mono',monospace;font-size:0.78rem;flex:1;"></div>
+      </div>
+      <canvas id="osc-canvas" height="230" style="width:100%;border-radius:10px;display:block;"></canvas>
+      <div style="margin-top:0.9rem;font-size:0.83rem;color:var(--muted);line-height:1.65;">
+        <span style="color:var(--red)">Without coincidence:</span> the detector output is a storm of random spikes — cosmic rays, thermal noise, ambient radioactivity all pile on top of the real signal. <span class="hl-green">With coincidence:</span> only events where both detectors fire together survive. The noise floor collapses.
+        <br><br>
+        <strong style="color:var(--text)">Why this works:</strong> A true physical event (e.g. a decaying nucleus) produces particles that travel through space and interact with <em>both</em> detectors nearly simultaneously. Background noise (random thermal spikes, cosmic rays hitting one detector) fires <em>only one</em> channel. The AND gate (coincidence unit) silently rejects single-channel events. Therefore, by requiring multiple detectors to fire within Δt, you automatically suppress random background by orders of magnitude while preserving real signals. This is the fundamental power of coincidence measurement — it gives physics a way to say "was this real?"
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ TWO CLOCKS -->
+  <div class="intro-panel" id="itab3">
+    <div class="timing-card">
+      <div class="timing-label">🎯 TWO-CLOCK EXPLAINER — Events fire randomly. Do both fire within Δt?</div>
+      <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:0.8rem;align-items:center;">
+        <div class="slider-group" style="flex:1;min-width:200px;margin:0;">
+          <div class="slider-label"><span>Resolving Window Δt</span><span id="clk-dt-val" style="color:var(--gold);">120 ms</span></div>
+          <input type="range" min="30" max="400" value="120" id="clk-dt-slider" oninput="updateClockDt()">
+        </div>
+        <button class="demo-btn demo-btn-gray" onclick="clkToggle()" id="clk-btn">⏸ Pause</button>
+        <button class="demo-btn demo-btn-blue" onclick="clkReset()">↺ Reset</button>
+      </div>
+      <canvas id="clk-canvas" height="260" style="width:100%;border-radius:10px;display:block;"></canvas>
+      <div id="clk-stats" style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:0.9rem;font-family:'Space Mono',monospace;font-size:0.82rem;"></div>
+      <div style="margin-top:0.8rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+        Each detector fires randomly (Poisson process). The <span class="hl-gold">gold bracket</span> is the Δt window. When both detectors fire inside it — <span class="hl-green">COINCIDENCE!</span> Drag the slider to widen or narrow the window and watch how the coincidence rate changes.
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ SIGNAL vs NOISE -->
+  <div class="intro-panel" id="itab4">
+    <div class="timing-card">
+      <div class="timing-label">📊 SIGNAL vs NOISE — How many detectors do you require?</div>
+      <div class="slider-group" style="margin-bottom:0.5rem;">
+        <div class="slider-label"><span>Coincidence Requirement</span><span id="snr-req-val" style="color:var(--gold);">2 detectors</span></div>
+        <input type="range" min="1" max="4" value="2" step="1" id="snr-req-slider" oninput="updateSNR()">
+      </div>
+      <canvas id="snr-canvas" height="260" style="width:100%;border-radius:10px;display:block;margin:0.5rem 0;"></canvas>
+      <div id="snr-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;margin-top:0.5rem;"></div>
+      <div style="margin-top:0.9rem;font-size:0.83rem;color:var(--muted);line-height:1.65;">
+        <span style="color:var(--text);font-weight:600;">The Fundamental Tradeoff</span>
+        <br>
+        When we try to reduce unwanted background signals, we also lose some real signals. So there is always a tradeoff:
+        <br>
+        <span style="color:#10b981;">More strict detection → less noise</span>
+        <br>
+        But also → <span style="color:#ef4444;">fewer real events detected</span>
+        
+        <br><br>
+        <strong style="color:var(--text)">The Math (Simple Idea)</strong>
+        <br>
+        If we require more detectors to agree at the same time, random noise becomes very unlikely.
+        <br><br>
+        For example:
+        <br>
+        • If 2 detectors must agree → some noise is removed
+        <br>
+        • If 3 detectors must agree → much more noise is removed
+        <br><br>
+        But the problem is: Some real signals may not reach all detectors, so we lose some real data as well.
+        <br><br>
+        <em>In simple terms: More strict conditions = cleaner data, but less data</em>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ──────────── SECTION 2: DETECTION ──────────── -->
+<section id="detection">
+<div class="container">
+  <div class="sec-label">02 — Radiation Detection</div>
+  <h2 class="sec-title">From Radiation to Electrical Pulse</h2>
+  <p class="sec-desc">Every coincidence system starts with a detector converting nuclear radiation into an electrical signal.</p>
+
+  <div class="grid-2" style="margin-bottom:2rem">
+    <div class="card">
+      <div class="card-title">⚡ Signal Chain — Block Diagram</div>
+      <canvas id="signal-chain-canvas" height="320" style="width:100%;border-radius:10px;display:block;background:#0a1628;margin-top:0.8rem;"></canvas>
+      <div style="margin-top:0.8rem;font-size:0.78rem;color:var(--muted);line-height:1.5;font-family:'Space Mono',monospace;">
+        <div style="margin-bottom:0.4rem;"><span style="color:#60a5fa;">● Incoming Radiation</span> hits the detector</div>
+        <div style="margin-bottom:0.4rem;"><span style="color:#8b5cf6;">● Energy Deposit</span> creates charge/light</div>
+        <div style="margin-bottom:0.4rem;"><span style="color:#06b6d4;">● PMT/Preamp</span> amplifies to mV signals</div>
+        <div><span style="color:#f59e0b;">● Output Pulse</span> with timing info</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔬 Detector Types & Performance</div>
+      <div style="margin-top:0.8rem;display:flex;flex-direction:column;gap:0.65rem;">
+        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
+          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">NaI(Tl) Scintillator</div>
+          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ High efficiency | ✓ Fast timing (200 ps) | ~ 7% energy resolution</div>
+        </div>
+        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
+          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">HPGe Semiconductor</div>
+          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ Excellent energy resolution (0.2%) | ✗ Slow timing | Requires 77K cooling</div>
+        </div>
+        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
+          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">BaF₂ Scintillator</div>
+          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ Super-fast timing (100 ps) | ✓ Used in PET scanners | ~ 5% energy resolution</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE PULSE DEMO -->
+  <div id="pulse-demo" style="animation:chainSlideIn 0.6s ease forwards;opacity:0;animation-delay:1.2s;">
+    <div style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent2);margin-bottom:0.8rem;letter-spacing:0.08em;">⚡ LIVE PULSE SIMULATOR</div>
+    <canvas id="pulse-canvas" height="200"></canvas>
+    <div class="demo-controls">
+      <button class="demo-btn demo-btn-blue" onclick="firePulseA()">Fire Detector A</button>
+      <button class="demo-btn demo-btn-green" onclick="firePulseB()">Fire Detector B</button>
+      <button class="demo-btn demo-btn-gray" onclick="resetPulses()">Reset</button>
+      <span class="demo-label">Δt window:</span>
+      <input type="range" min="20" max="200" value="80" id="dt-slider" style="width:120px" oninput="updateDt(this.value)">
+      <span id="dt-val" style="font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--gold)">80 ns</span>
+      <div id="coincidence-status" class="status-box">Waiting for pulses...</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ──────────── SECTION 3: LOGIC ──────────── -->
+<section id="logic">
+<div class="container">
+  <div class="sec-label">03 — Coincidence Logic</div>
+  <h2 class="sec-title">Electronics &amp; AND Gate Logic</h2>
+  <p class="sec-desc">The coincidence unit is fundamentally an electronic AND gate — it fires only when both inputs arrive within the resolving time window.</p>
+
+  <!-- ANIMATED SIGNAL CHAIN -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;margin-bottom:1rem;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent2);letter-spacing:0.08em;">⚡ ANIMATED SIGNAL FLOW — Click to fire an event</div>
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <button class="demo-btn demo-btn-blue" onclick="chainFire(true)" style="font-size:0.78rem;padding:0.4rem 0.9rem;">▶ Fire Coincidence</button>
+        <button class="demo-btn demo-btn-red" onclick="chainFire(false)" style="font-size:0.78rem;padding:0.4rem 0.9rem;">✗ Fire Non-Coincidence</button>
+        <button class="demo-btn demo-btn-gray" onclick="chainReset()" style="font-size:0.78rem;padding:0.4rem 0.9rem;">↺ Reset</button>
+      </div>
+    </div>
+    <canvas id="chain-canvas" style="width:100%;border-radius:10px;display:block;"></canvas>
+    <div id="chain-info" style="margin-top:1rem;min-height:2.2rem;font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--accent3);text-align:center;transition:all 0.3s;"></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🔀 Constant Fraction Discriminator (CFD)</div>
+      <div class="card-text" style="margin-top:0.5rem;line-height:1.7;">
+        A standard leading-edge discriminator triggers at a fixed voltage threshold — so large pulses trigger earlier than small ones. This <span class="hl">timing walk</span> degrades resolution.<br><br>
+        The CFD triggers at a <span class="hl-gold">fixed fraction</span> of the pulse peak (typically 20–30%), independent of amplitude. This achieves timing resolutions of <span class="hl-green">~20 ps FWHM</span>.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🚫 Anti-Coincidence (Veto)</div>
+      <div class="card-text" style="margin-top:0.5rem;line-height:1.7;">
+        The inverse of coincidence — an event is <span class="hl">rejected</span> if a veto detector fires simultaneously.<br><br>
+        Used to reject cosmic muons in underground detectors, bremsstrahlung events in beta spectroscopy, and Compton-scattered photons. Example: the <span class="hl-gold">COS-B satellite</span> used anti-coincidence plastic scintillators to veto charged particle backgrounds in gamma-ray astronomy.
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ──────────── SECTION 4: TIMING ──────────── -->
+<section id="timing">
+<div class="container">
+  <div class="sec-label">04 — Timing Techniques</div>
+  <h2 class="sec-title">Resolving Time &amp; the TAC</h2>
+  <p class="sec-desc">Five interactive demos — explore every layer of coincidence timing from capacitor charging to full spectrum building.</p>
+
+  <!-- ═══ DEMO TABS ═══ -->
+  <div class="demo-tabs">
+    <button class="dtab active" onclick="switchTab(0)">① TAC Animation</button>
+    <button class="dtab" onclick="switchTab(1)">② Timing Walk</button>
+    <button class="dtab" onclick="switchTab(2)">③ Spectrum Builder</button>
+    <button class="dtab" onclick="switchTab(3)">④ Δt Tuner</button>
+    <button class="dtab" onclick="switchTab(4)">⑤ NIM vs FPGA</button>
+  </div>
+
+  <!-- ═══ TAB 0: TAC STEP-BY-STEP ═══ -->
+  <div class="tab-panel active" id="tab0">
+    <div class="timing-card">
+      <div class="timing-label">🎬 TAC STEP-BY-STEP — Watch time convert to voltage</div>
+      <canvas id="tac-anim-canvas" height="240" style="width:100%;border-radius:8px;display:block;"></canvas>
+      <div style="display:flex;gap:0.7rem;flex-wrap:wrap;margin-top:1rem;align-items:center;">
+        <button class="demo-btn demo-btn-blue" onclick="tacAnimFire()">▶ Fire Event</button>
+        <button class="demo-btn demo-btn-gray" onclick="tacAnimReset()">↺ Reset</button>
+        <div id="tac-anim-info" style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent3);flex:1;min-width:180px;"></div>
+      </div>
+      <div style="margin-top:1rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+        The TAC starts a voltage ramp when the <span class="hl">START pulse</span> (Det A) arrives. It charges a capacitor linearly with time. When the <span class="hl-gold">STOP pulse</span> (Det B) arrives, charging halts — the final voltage height is <strong>proportional to the time difference Δt</strong>. This voltage is then digitised by an ADC into an MCA channel number.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 1: TIMING WALK ═══ -->
+  <div class="tab-panel" id="tab1">
+    <div class="timing-card">
+      <div class="timing-label">⚡ TIMING WALK — Leading-edge vs CFD discriminator</div>
+      <div style="display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:0.9rem;align-items:center;">
+        <button class="demo-btn" id="walk-led-btn" onclick="walkMode('led')" style="background:var(--red);color:#fff;font-size:0.78rem;padding:0.4rem 1rem;">Leading-Edge</button>
+        <button class="demo-btn" id="walk-cfd-btn" onclick="walkMode('cfd')" style="background:var(--bg3);color:var(--text);border:1px solid var(--border);font-size:0.78rem;padding:0.4rem 1rem;">CFD Mode</button>
+        <div id="walk-verdict" style="font-family:'Space Mono',monospace;font-size:0.8rem;flex:1;"></div>
+      </div>
+      <canvas id="walk-canvas" height="220" style="width:100%;border-radius:8px;display:block;"></canvas>
+      <div style="margin-top:1rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+        Three pulses of <strong>different amplitudes</strong> hit the same detector. The threshold line (red dashes) is crossed at <em>different times</em> — causing <span style="color:var(--red)">timing walk</span>. Switch to CFD: each pulse triggers at its own <span class="hl-gold">fixed fraction (30%)</span> of peak — all trigger at the same relative time. Walk eliminated.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 2: SPECTRUM BUILDER ═══ -->
+  <div class="tab-panel" id="tab2">
+    <div class="timing-card">
+      <div class="timing-label">📊 LIVE SPECTRUM BUILDER — Click to fire events one by one</div>
+      <div style="display:flex;gap:0.7rem;flex-wrap:wrap;margin-bottom:0.9rem;align-items:center;">
+        <button class="demo-btn demo-btn-blue" onclick="sbFire(1)">+1 Event</button>
+        <button class="demo-btn demo-btn-green" onclick="sbFire(20)">+20 Events</button>
+        <button class="demo-btn demo-btn-gray" onclick="sbFire(200)">+200 Events</button>
+        <button class="demo-btn demo-btn-red" onclick="sbReset()">↺ Clear</button>
+        <div id="sb-count" style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent3);flex:1;"></div>
+      </div>
+      <canvas id="sb-canvas" height="240" style="width:100%;border-radius:8px;display:block;"></canvas>
+      <div style="margin-top:1rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+        Each click fires real events sampled from the physics distributions. <span class="hl-green">True coincidences</span> cluster into a central Gaussian peak. <span style="color:var(--red)">Accidentals</span> scatter uniformly across all channels. Watch the spectrum emerge exactly as it does in a real laboratory measurement.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 3: Δt TUNER ═══ -->
+  <div class="tab-panel" id="tab3">
+    <div class="timing-card">
+      <div class="timing-label">⏱ RESOLVING TIME Δt TUNER — Efficiency vs background tradeoff</div>
+      <div class="slider-group" style="margin-bottom:0.5rem;">
+        <div class="slider-label"><span>Resolving Time Δt</span><span id="dtt-val" style="color:var(--gold);">100 ns</span></div>
+        <input type="range" min="5" max="500" value="100" id="dtt-slider" oninput="updateDtTuner()">
+      </div>
+      <canvas id="dtt-canvas" height="240" style="width:100%;border-radius:8px;display:block;margin:0.5rem 0;"></canvas>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.7rem;margin:0.8rem 0;" id="dtt-stats"></div>
+      <div style="margin-top:0.5rem;font-size:0.83rem;color:var(--muted);line-height:1.6;">
+        Drag the slider to change Δt. Watch how the acceptance window (blue band) widens or narrows. A narrow Δt slices through some true coincidences (Gaussian clipped) — reducing efficiency. A wide Δt lets in more accidentals (flat background rises). The optimum is where <strong>peak/background ratio is maximised</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TAB 4: NIM vs FPGA ═══ -->
+  <div class="tab-panel" id="tab4">
+    <div class="timing-card">
+      <div class="timing-label">🔢 NIM vs FPGA — Old hardware vs modern digital timing</div>
+      <button class="demo-btn demo-btn-blue" onclick="nimFire()" style="margin-bottom:1rem;">▶ Send Signal Through Both</button>
+      <canvas id="nim-canvas" height="300" style="width:100%;border-radius:8px;display:block;"></canvas>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin-top:1rem;">
+        <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:0.9rem;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--gold);margin-bottom:0.4rem;">NIM / CAMAC HARDWARE</div>
+          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;">Discrete modules in a crate. Each stage (preamp → amp → CFD → TAC → ADC) is a separate physical box connected by coaxial cables. Reliable, well-understood — but bulky, expensive per channel, and limited to one time interval per START pulse.</div>
+        </div>
+        <div style="background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:0.9rem;">
+          <div style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--accent2);margin-bottom:0.4rem;">FPGA DIGITAL TDC</div>
+          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;">All logic implemented in programmable firmware. Handles hundreds of channels simultaneously. Δt window is software-configurable in nanoseconds. Dead time approaches zero. Resolution ~13 ps demonstrated. Used in all modern large-scale experiments.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ──────────── SECTION 5: ACCIDENTALS ──────────── -->
+<section id="accidentals">
+<div class="container">
+  <div class="sec-label">05 — Accidental Coincidences</div>
+  <h2 class="sec-title">True vs Accidental Coincidence</h2>
+  <p class="sec-desc">Not all coincidences are real. Understanding the accidental rate and how to subtract it is critical to any precision measurement.</p>
+
+  <div class="grid-2" style="margin-bottom:2rem;">
+    <div class="card" style="border-color:rgba(16,185,129,0.3);">
+      <div class="card-title" style="color:var(--green);">✅ True Coincidence</div>
+      <div class="card-text" style="line-height:1.7;margin-top:0.5rem;">Both signals originate from the <span class="hl-green">same nuclear decay event</span>. Physically correlated — they are causally linked. Rate depends on source activity and detector solid angle.</div>
+    </div>
+    <div class="card" style="border-color:rgba(239,68,68,0.3);">
+      <div class="card-title" style="color:var(--red);">❌ Accidental Coincidence</div>
+      <div class="card-text" style="line-height:1.7;margin-top:0.5rem;">Two <span style="color:var(--red);font-weight:600;">unrelated events</span> randomly fall within Δt by pure chance. Their rate is determined by singles rates and the resolving window — purely statistical.</div>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <div style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;">Accidental Coincidence Rate Formula</div>
+    <div class="formula">R<sub style="font-size:0.65em;">A</sub> = 2 · R<sub style="font-size:0.65em;">1</sub> · R<sub style="font-size:0.65em;">2</sub> · Δt</div>
+    <div class="formula-terms">
+      <div class="term"><span>R_A</span> — Accidental coincidence rate (s⁻¹)</div>
+      <div class="term"><span>R₁, R₂</span> — Singles rates in detectors 1 and 2</div>
+      <div class="term"><span>Δt</span> — Resolving time window</div>
+      <div class="term"><span>Factor 2</span> — either detector can arrive first</div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="calc-box">
+    <div style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent2);margin-bottom:1rem;letter-spacing:0.08em;">🧮 ACCIDENTAL RATE CALCULATOR</div>
+    <div class="calc-grid">
+      <div class="input-group">
+        <label>R₁ — Singles rate (s⁻¹)</label>
+        <input type="number" id="calc-r1" value="5000" oninput="calcAccidental()">
+      </div>
+      <div class="input-group">
+        <label>R₂ — Singles rate (s⁻¹)</label>
+        <input type="number" id="calc-r2" value="5000" oninput="calcAccidental()">
+      </div>
+      <div class="input-group">
+        <label>Δt — Resolving time (ns)</label>
+        <input type="number" id="calc-dt" value="100" oninput="calcAccidental()">
+      </div>
+      <div class="input-group">
+        <label>True coincidence rate (s⁻¹)</label>
+        <input type="number" id="calc-rt" value="200" oninput="calcAccidental()">
+      </div>
+    </div>
+    <div class="calc-result" id="calc-result">—</div>
+  </div>
+
+  <div class="card" style="margin-top:2rem;">
+    <div class="card-title">🔧 Experimental Correction Method</div>
+    <div class="card-text" style="line-height:1.75;margin-top:0.5rem;">
+      To measure accidentals experimentally, introduce a known <span class="hl-gold">delay (≫ Δt)</span> in one detector channel — typically several microseconds. Any coincidences recorded in this delayed window are <em>purely accidental</em>, since the physical correlation is destroyed.<br><br>
+      <span class="hl">Corrected true rate = R_prompt − R_delayed</span><br><br>
+      This technique is used routinely in high-rate environments like safeguards neutron counting and activation analysis labs.
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ──────────── SECTION 6: APPLICATIONS ──────────── -->
+<section id="applications">
+<div class="container">
+  <div class="sec-label">06 — Applications</div>
+  <h2 class="sec-title">Real-World Applications</h2>
+  <p class="sec-desc">Click each application to expand details. Coincidence measurements span from standard student lab experiments to frontier nuclear security and medical physics.</p>
+
+  <div class="grid-2">
+    <div class="app-card" onclick="toggleApp(this)">
+      <div class="app-card-title">☢ γ–γ Angular Correlation</div>
+      <div class="app-card-body">Two NaI detectors at variable angles measure cascade gamma rays from nuclear decay — determines spin and multipolarity of nuclear levels.</div>
+      <div class="app-detail">
+        <span class="app-tag">Nuclear Structure</span><span class="app-tag">NaI Detectors</span><span class="app-tag">Lab Experiment</span>
+        <p style="margin-top:0.7rem;">In a typical experiment with <span class="hl-gold">⁶⁰Co</span>, two 1.17 MeV and 1.33 MeV cascade gammas are emitted. The angular correlation W(θ) ∝ 1 + A₂P₂(cosθ) + A₄P₄(cosθ) reveals the multipolarity and the angular momentum of the intermediate state. A coincidence spectrum is recorded at each angle.</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="toggleApp(this)">
+      <div class="app-card-title">⚛ β–γ Coincidence (Activity)</div>
+      <div class="app-card-body">Absolute activity measurement of a radioactive source — avoids the need for calibrated sources or efficiency corrections by using geometric factors only.</div>
+      <div class="app-detail">
+        <span class="app-tag">Metrology</span><span class="app-tag">Activity Measurement</span><span class="app-tag">⁶⁰Co</span>
+        <p style="margin-top:0.7rem;">The measured coincidence rate R_c = A₀ · εβ · εγ, and singles rates Rβ = A₀·εβ, Rγ = A₀·εγ. Solving: <span class="hl-gold">A₀ = Rβ·Rγ / R_c</span>. Efficiency cancels out — highly accurate absolute activity determination. Used in national metrology standards.</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="toggleApp(this)">
+      <div class="app-card-title">💫 Positron Lifetime Spectroscopy</div>
+      <div class="app-card-body">TAC measures the lifetime of positronium formed in materials — provides direct information about electron density and defects at the atomic scale.</div>
+      <div class="app-detail">
+        <span class="app-tag">Materials Science</span><span class="app-tag">TAC</span><span class="app-tag">²²Na Source</span>
+        <p style="margin-top:0.7rem;">Using a <span class="hl-gold">²²Na</span> source, the 1.27 MeV "birth" gamma (nearly simultaneous with e⁺ emission) starts the TAC. The 511 keV annihilation gamma stops it. The TAC spectrum yields the positronium lifetime (~125 ps for para-Ps, ~142 ns for ortho-Ps). Defect concentrations in semiconductors and polymers are directly probed.</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="toggleApp(this)">
+      <div class="app-card-title">⏰ Muon Lifetime Measurement</div>
+      <div class="app-card-body">Classic student experiment: measure the muon mean lifetime (~2.197 µs) using scintillator coincidence and TAC — a direct test of special relativity.</div>
+      <div class="app-detail">
+        <span class="app-tag">Particle Physics</span><span class="app-tag">Special Relativity</span><span class="app-tag">Student Lab</span>
+        <p style="margin-top:0.7rem;">A muon enters a plastic scintillator (START pulse) and decays, producing a decay electron (STOP pulse). The TAC time spectrum shows an exponential decay: N(t) ∝ e<sup>−t/τ</sup>. Fitting gives τ_µ ≈ 2.197 µs, matching the PDG value precisely — validating relativistic time dilation since cosmic muons live long enough to reach Earth's surface only due to this effect.</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="toggleApp(this)">
+      <div class="app-card-title">🔒 Neutron Coincidence Counting</div>
+      <div class="app-card-body">IAEA safeguards application: identify and quantify fissile materials (Pu, U) without destroying them — critical for nuclear non-proliferation.</div>
+      <div class="app-detail">
+        <span class="app-tag">IAEA Safeguards</span><span class="app-tag">Non-Destructive Assay</span><span class="app-tag">³He Detectors</span>
+        <p style="margin-top:0.7rem;">Spontaneous fission of ²⁴⁰Pu emits 2–3 neutrons nearly simultaneously. A <span class="hl-gold">shift-register coincidence circuit</span> counts correlated neutron pairs within ~64 µs gate. The doubles rate is proportional to the ²⁴⁰Pu mass. Used in "AWCC" (Active Well Coincidence Counters) at nuclear fuel facilities worldwide.</p>
+      </div>
+    </div>
+
+    <div class="app-card" onclick="toggleApp(this)">
+      <div class="app-card-title">🌟 Neutrino Discovery (1956)</div>
+      <div class="app-card-body">The Cowan–Reines experiment used 4-fold coincidence to achieve the first confirmed detection of the neutrino — 26 years after Pauli proposed it.</div>
+      <div class="app-detail">
+        <span class="app-tag">Historical</span><span class="app-tag">Nobel Prize 1995</span><span class="app-tag">4-fold Coincidence</span>
+        <p style="margin-top:0.7rem;">Anti-neutrinos from the Savannah River nuclear reactor induced inverse beta decay: <span class="hl-gold">ν̄_e + p → e⁺ + n</span>. The positron annihilation produced two 511 keV gammas (prompt coincidence), and neutron capture produced gammas ~5 µs later (delayed coincidence). This 4-fold coincidence signature was essentially unique — signal-to-background ratio ~3:1. Reines received the Nobel Prize in 1995.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ──────────── SECTION 7: CERN ──────────── -->
+<section id="cern">
+<div class="container">
+  <div class="sec-label">07 — Large Scale Physics</div>
+  <h2 class="sec-title">Coincidence at CERN's LHC</h2>
+  <p class="sec-desc">At the Large Hadron Collider, coincidence logic operates at a scale that would have been unimaginable to Bothe and Geiger in 1924.</p>
+
+  <div class="grid-3" style="margin-bottom:2rem;">
+    <div class="card" style="border-color:rgba(239,68,68,0.3);">
+      <div style="font-family:'Space Mono',monospace;font-size:1.5rem;color:var(--red);margin-bottom:0.4rem;">40 MHz</div>
+      <div class="card-title">Bunch Crossing Rate</div>
+      <div class="card-text">Proton bunches collide every <span class="hl">25 nanoseconds</span>. Each crossing can produce ~40 overlapping pp interactions (pile-up).</div>
+    </div>
+    <div class="card" style="border-color:rgba(245,158,11,0.3);">
+      <div style="font-family:'Space Mono',monospace;font-size:1.5rem;color:var(--gold);margin-bottom:0.4rem;">50 TB/s</div>
+      <div class="card-title">Raw Data Rate</div>
+      <div class="card-text">Recording every collision would produce <span class="hl-gold">50 terabytes per second</span> — exceeding the entire internet's bandwidth. Impossible to store or process.</div>
+    </div>
+    <div class="card" style="border-color:rgba(16,185,129,0.3);">
+      <div style="font-family:'Space Mono',monospace;font-size:1.5rem;color:var(--green);margin-bottom:0.4rem;">~1 kHz</div>
+      <div class="card-title">Final Storage Rate</div>
+      <div class="card-text">After multi-level coincidence triggers, only <span class="hl-green">~1,000 events per second</span> are written to permanent storage. A reduction of 40 million to one.</div>
+    </div>
+  </div>
+
+  <!-- Trigger flow -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2rem;">
+    <div style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent2);margin-bottom:1.5rem;letter-spacing:0.08em;">⚡ ATLAS / CMS TRIGGER CASCADE</div>
+    <div class="trigger-flow">
+      <div class="trigger-step">
+        <div class="rate">40,000,000 /s</div>
+        <div class="name">LHC Collisions</div>
+        <div class="desc">Raw bunch crossings</div>
+      </div>
+      <div class="trigger-arrow">→</div>
+      <div class="trigger-step" style="border-color:rgba(239,68,68,0.4);">
+        <div class="rate" style="color:var(--red);">Level-1 Hardware</div>
+        <div class="name">L1 Trigger</div>
+        <div class="desc">&lt;2.5 µs latency; calorimeter + muon coincidence; accepts ~100 kHz</div>
+      </div>
+      <div class="trigger-arrow">→</div>
+      <div class="trigger-step" style="border-color:rgba(245,158,11,0.4);">
+        <div class="rate" style="color:var(--gold);">100,000 /s</div>
+        <div class="name">HLT Farm</div>
+        <div class="desc">Software algorithms reconstruct tracks; multi-object coincidence</div>
+      </div>
+      <div class="trigger-arrow">→</div>
+      <div class="trigger-step" style="border-color:rgba(16,185,129,0.4);">
+        <div class="rate" style="color:var(--green);">~1,000 /s</div>
+        <div class="name">Storage</div>
+        <div class="desc">Written to CERN data centre — physics-quality events only</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATLAS Detector 3D Model -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2rem;">
+    <div style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent2);margin-bottom:1rem;letter-spacing:0.08em;">🔬 ATLAS DETECTOR — Interactive 3D Model</div>
+    <div style="position:relative;width:100%;padding-bottom:100%;">
+      <iframe title="CERN ATLAS Detector" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/e3c13e9a777c4c1db14cd75cf61855fb/embed" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:8px;"></iframe>
+    </div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-top:1rem;text-align:center;">Explore the ATLAS detector structure. Zoom, rotate, and interact with the detector layers to visualize the multi-stage coincidence architecture.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔬 Higgs Boson: A Coincidence Triumph</div>
+    <div class="card-text" style="line-height:1.75;margin-top:0.5rem;">
+      Coincidence measurement was used in the Higgs discovery to reduce background noise. The detectors only recorded events when specific particles appeared at the same time, like <span class="hl-gold">two photons or four leptons</span>. Random background signals almost never produce such exact combinations simultaneously. So by requiring coincidence, <span class="hl-green">most of the noise was removed</span>. This made it possible to clearly identify the real Higgs signal.
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ──────────── SECTION 8: QUIZ ──────────── -->
+<section id="quiz">
+<div class="container">
+  <div class="sec-label">08 — Test Yourself</div>
+  <h2 class="sec-title">Knowledge Check</h2>
+  <p class="sec-desc">Answer 8 questions covering the key concepts from this seminar.</p>
+
+  <div class="quiz-box" id="quiz-box">
+    <div id="quiz-content"></div>
+  </div>
+</div>
+</section>
+
+<!-- ──────────── SECTION 9: REFERENCES ──────────── -->
+<section id="references" style="min-height:auto;padding-bottom:4rem;">
+<div class="container">
+  <div class="sec-label">09 — References</div>
+  <h2 class="sec-title">References</h2>
+  <ul class="ref-list">
+    <li><div class="ref-num">1</div><div class="ref-text"><strong>Bothe, W. &amp; Geiger, H.</strong> (1924). Über das Wesen des Comptoneffekts. <em>Zeitschrift für Physik</em>, 26, 44–58. <a href="https://doi.org/10.1007/BF01327326" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1007/BF01327326</a></div></li>
+    <li><div class="ref-num">2</div><div class="ref-text"><strong>ATLAS Collaboration.</strong> (2012). Observation of a new boson at a mass of 125 GeV with the ATLAS detector at the LHC. <em>Physics Letters B</em>, 716(1), 1–29. <a href="https://doi.org/10.1016/j.physletb.2012.08.020" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1016/j.physletb.2012.08.020</a></div></li>
+    <li><div class="ref-num">3</div><div class="ref-text"><strong>CMS Collaboration.</strong> (2012). Observation of a new boson at mass near 125 GeV in pp collisions at √s = 7 and 8 TeV. <em>Physics Letters B</em>, 716(1), 30–61. <a href="https://doi.org/10.1016/j.physletb.2012.08.021" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1016/j.physletb.2012.08.021</a></div></li>
+    <li><div class="ref-num">4</div><div class="ref-text"><strong>Cowan, C.L., Reines, F., Harrison, F.B., Kruse, H.W. &amp; McGuire, A.D.</strong> (1956). Detection of the Free Neutrino: A Confirmation. <em>Science</em>, 124(3212), 103–104. <a href="https://doi.org/10.1126/science.124.3212.103" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1126/science.124.3212.103</a></div></li>
+    <li><div class="ref-num">5</div><div class="ref-text"><strong>Mirion Technologies.</strong> Gamma-Ray Coincidence Counting Techniques. Application Note. <a href="https://www.mirion.com/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://www.mirion.com/</a></div></li>
+    <li><div class="ref-num">6</div><div class="ref-text"><strong>ORTEC (Advanced Measurement Technology).</strong> Time Coincidence Techniques and TAC Systems. <a href="https://www.ortec-online.com/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://www.ortec-online.com/</a></div></li>
+    <li><div class="ref-num">7</div><div class="ref-text"><strong>Krane, K.S.</strong> (1987). Introductory Nuclear Physics. John Wiley &amp; Sons. ISBN: 978-0471805533. [Chapter on Coincidence Detection]</div></li>
+    <li><div class="ref-num">8</div><div class="ref-text"><strong>Knoll, G.F.</strong> (2010). Radiation Detection and Measurement (4th ed.). John Wiley &amp; Sons. ISBN: 978-0470131480. <a href="https://onlinelibrary.wiley.com/doi/book/10.1002/9781118021668" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://onlinelibrary.wiley.com/doi/book/10.1002/9781118021668</a></div></li>
+    <li><div class="ref-num">9</div><div class="ref-text"><strong>CERN.</strong> ATLAS Experiment at the LHC. <a href="https://atlas.cern/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://atlas.cern/</a></div></li>
+    <li><div class="ref-num">10</div><div class="ref-text"><strong>CERN.</strong> CMS Experiment Public Results. <a href="https://cms.cern/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://cms.cern/</a></div></li>
+    <li><div class="ref-num">11</div><div class="ref-text"><strong>Wikipedia.</strong> Coincidence detector. <a href="https://en.wikipedia.org/wiki/Coincidence_detector" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://en.wikipedia.org/wiki/Coincidence_detector</a></div></li>
+    <li><div class="ref-num">12</div><div class="ref-text"><strong>Nuclear Data Services (IAEA).</strong> NucDat Database. <a href="https://www-nds.iaea.org/" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://www-nds.iaea.org/</a></div></li>
+  </ul>
+</div>
+</section>
+
+<footer>
+  <div>⚛ Coincidence Measurements in Nuclear &amp; Particle Physics</div>
+  <div style="margin-top:0.3rem;color:rgba(100,116,139,0.6);">By Shaik Adnan · MSc 1st Year · Reg. No P250411</div>
+  <div style="margin-top:1.5rem;display:flex;flex-direction:column;align-items:center;gap:0.8rem;">
+    <div style="font-size:0.75rem;color:rgba(100,116,139,0.8);">Scan to access on mobile or download</div>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://AdnanShaik75.github.io/coincidence-seminar/" alt="QR Code - Access website on mobile" style="width:150px;height:150px;border-radius:8px;border:2px solid rgba(59,130,246,0.3);padding:8px;background:#fff;" />
+  </div>
+</footer>
+
+<script>
+// ─── STARS ───
+(function(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let stars = [];
+  function resize(){ c.width = window.innerWidth; c.height = window.innerHeight; }
+  function initStars(){
+    stars = [];
+    for(let i=0;i<180;i++) stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+0.3,o:Math.random()*0.7+0.2,s:Math.random()*0.3+0.05});
+  }
+  function drawStars(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.o += (Math.random()-0.5)*0.03;
+      s.o = Math.max(0.1,Math.min(0.9,s.o));
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle = `rgba(180,210,255,${s.o})`; ctx.fill();
+    });
+    requestAnimationFrame(drawStars);
+  }
+  resize(); initStars(); drawStars();
+  window.addEventListener('resize',()=>{resize();initStars();});
+})();
+
+// ─── SCROLLSPY ───
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      const id = e.target.id;
+      navLinks.forEach(l=>{ l.classList.toggle('active', l.getAttribute('href')==='#'+id); });
+    }
+  });
+},{threshold:0.12});
+sections.forEach(s=>{ if(s.id!=='hero') observer.observe(s); else s.classList.add('visible'); });
+
+// ─── PULSE SIMULATOR ───
+const pulseCanvas = document.getElementById('pulse-canvas');
+const pCtx = pulseCanvas.getContext('2d');
+let pulseA = null, pulseB = null;
+let dtWindow = 80;
+
+function resizePulseCanvas(){
+  pulseCanvas.width = pulseCanvas.offsetWidth * window.devicePixelRatio || 800;
+  pulseCanvas.height = 200 * window.devicePixelRatio || 200;
+  pCtx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+  drawPulses();
+}
+
+function drawPulses(){
+  const w = pulseCanvas.offsetWidth || 800;
+  const h = 200;
+  pCtx.clearRect(0,0,w,h);
+
+  // background
+  pCtx.fillStyle = '#050d18'; pCtx.fillRect(0,0,w,h);
+
+  // grid lines
+  pCtx.strokeStyle='rgba(59,130,246,0.1)'; pCtx.lineWidth=1;
+  for(let y=0;y<h;y+=40){ pCtx.beginPath(); pCtx.moveTo(0,y); pCtx.lineTo(w,y); pCtx.stroke(); }
+  for(let x=0;x<w;x+=80){ pCtx.beginPath(); pCtx.moveTo(x,0); pCtx.lineTo(x,h); pCtx.stroke(); }
+
+  // Δt window visualization
+  const centerX = w/2;
+  const pxPerNs = 1.5;
+  pCtx.fillStyle='rgba(59,130,246,0.07)';
+  pCtx.fillRect(centerX - dtWindow*pxPerNs/2, 0, dtWindow*pxPerNs, h);
+  pCtx.strokeStyle='rgba(59,130,246,0.4)'; pCtx.lineWidth=1; pCtx.setLineDash([4,4]);
+  pCtx.beginPath(); pCtx.moveTo(centerX-dtWindow*pxPerNs/2,0); pCtx.lineTo(centerX-dtWindow*pxPerNs/2,h); pCtx.stroke();
+  pCtx.beginPath(); pCtx.moveTo(centerX+dtWindow*pxPerNs/2,0); pCtx.lineTo(centerX+dtWindow*pxPerNs/2,h); pCtx.stroke();
+  pCtx.setLineDash([]);
+
+  // labels
+  pCtx.fillStyle='rgba(59,130,246,0.6)'; pCtx.font='11px Space Mono';
+  pCtx.fillText('← Δt window →', centerX-35, 15);
+
+  // Baseline
+  const baseA = h*0.35, baseB = h*0.75;
+  pCtx.strokeStyle='rgba(96,165,250,0.3)'; pCtx.lineWidth=1;
+  pCtx.beginPath(); pCtx.moveTo(0,baseA); pCtx.lineTo(w,baseA); pCtx.stroke();
+  pCtx.beginPath(); pCtx.moveTo(0,baseB); pCtx.lineTo(w,baseB); pCtx.stroke();
+
+  pCtx.fillStyle='rgba(96,165,250,0.5)'; pCtx.font='11px Space Mono';
+  pCtx.fillText('Det A', 8, baseA-8);
+  pCtx.fillStyle='rgba(16,185,129,0.5)';
+  pCtx.fillText('Det B', 8, baseB-8);
+
+  // Draw pulses
+  function drawPulse(xPos, base, color, label){
+    const pw = 30, ph = 55;
+    pCtx.strokeStyle = color; pCtx.lineWidth = 2.5;
+    pCtx.beginPath();
+    pCtx.moveTo(xPos-pw, base);
+    pCtx.lineTo(xPos, base);
+    pCtx.lineTo(xPos+3, base-ph);
+    pCtx.lineTo(xPos+pw/2, base-ph*0.9);
+    pCtx.lineTo(xPos+pw, base);
+    pCtx.stroke();
+    pCtx.fillStyle=color; pCtx.font='10px Space Mono';
+    pCtx.fillText(label, xPos-10, base-ph-8);
+    // vertical marker
+    pCtx.strokeStyle=color; pCtx.setLineDash([3,3]); pCtx.lineWidth=1;
+    pCtx.beginPath(); pCtx.moveTo(xPos,0); pCtx.lineTo(xPos,h); pCtx.stroke();
+    pCtx.setLineDash([]);
+  }
+
+  if(pulseA !== null) drawPulse(pulseA, baseA, '#60a5fa', 't_A');
+  if(pulseB !== null) drawPulse(pulseB, baseB, '#10b981', 't_B');
+
+  // coincidence indicator
+  if(pulseA !== null && pulseB !== null){
+    const sep = Math.abs(pulseA - pulseB) / pxPerNs;
+    const accepted = sep <= dtWindow;
+    const midX = (pulseA+pulseB)/2;
+    pCtx.fillStyle = accepted ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.12)';
+    pCtx.fillRect(Math.min(pulseA,pulseB), 0, Math.abs(pulseA-pulseB), h);
+    pCtx.font = 'bold 13px DM Sans';
+    pCtx.fillStyle = accepted ? '#10b981' : '#ef4444';
+    pCtx.textAlign='center';
+    pCtx.fillText(accepted ? `✓ COINCIDENCE (${sep.toFixed(0)} ns)` : `✗ REJECTED (${sep.toFixed(0)} ns > Δt)`, midX, h/2);
+    pCtx.textAlign='left';
+    const statusEl = document.getElementById('coincidence-status');
+    statusEl.textContent = accepted ? `✓ ACCEPTED — Δt = ${sep.toFixed(1)} ns` : `✗ REJECTED — Δt = ${sep.toFixed(1)} ns (outside window)`;
+    statusEl.className = 'status-box ' + (accepted ? 'status-accept' : 'status-reject');
+  }
+}
+
+function firePulseA(){
+  const w = pulseCanvas.offsetWidth;
+  pulseA = w*0.35 + (Math.random()-0.5)*60;
+  drawPulses();
+}
+function firePulseB(){
+  const w = pulseCanvas.offsetWidth;
+  pulseB = w*0.65 + (Math.random()-0.5)*60;
+  drawPulses();
+}
+function resetPulses(){ pulseA=null; pulseB=null; document.getElementById('coincidence-status').textContent='Waiting for pulses...'; document.getElementById('coincidence-status').className='status-box'; drawPulses(); }
+function updateDt(v){ dtWindow=parseInt(v); document.getElementById('dt-val').textContent=v+' ns'; drawPulses(); }
+
+window.addEventListener('resize', resizePulseCanvas);
+setTimeout(resizePulseCanvas, 100);
+
+// ─── SIGNAL CHAIN ANIMATION ───
+const signalChainCanvas = document.getElementById('signal-chain-canvas');
+let signalChainRaf = null;
+let signalChainTime = 0;
+
+function drawSignalChain(){
+  const dpr = window.devicePixelRatio || 1;
+  const w = signalChainCanvas.offsetWidth || 700;
+  const h = 320;
+  signalChainCanvas.width = w*dpr;
+  signalChainCanvas.height = h*dpr;
+  const ctx = signalChainCanvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  ctx.fillStyle = '#050d18';
+  ctx.fillRect(0,0,w,h);
+
+  // Subtle grid
+  ctx.strokeStyle = 'rgba(59,130,246,0.04)';
+  ctx.lineWidth = 0.5;
+  for(let x = 0; x < w; x += 60) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  }
+
+  const stages = [
+    {label:'RADIATION\nINCIDENT', desc:'γ-ray hits', color:'#3b82f6', x: w*0.12},
+    {label:'SCINTILLATION\n& IONIZATION', desc:'Light/charge', color:'#8b5cf6', x: w*0.35},
+    {label:'PHOTOMULTIPLIER\nTUBE', desc:'PMT amp ×10⁶', color:'#06b6d4', x: w*0.58},
+    {label:'LOGIC CIRCUIT\nREADY', desc:'TTL pulse', color:'#10b981', x: w*0.81}
+  ];
+
+  const blockW = 65;
+  const blockH = 85;
+  const centerY = h * 0.32;
+
+  // Main animation cycle (8 seconds)
+  const cycleTime = (signalChainTime % 8000) / 8000;
+
+  // Draw stage blocks
+  stages.forEach((stage, idx) => {
+    const x = stage.x;
+    const y = centerY - blockH/2;
+
+    // Block background
+    ctx.save();
+    ctx.shadowColor = stage.color;
+    ctx.shadowBlur = 8;
+
+    const grad = ctx.createLinearGradient(x - blockW/2, y, x - blockW/2, y + blockH);
+    grad.addColorStop(0, stage.color + '55');
+    grad.addColorStop(0.5, stage.color + '33');
+    grad.addColorStop(1, stage.color + '11');
+
+    ctx.fillStyle = grad;
+    ctx.strokeStyle = stage.color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(x - blockW/2, y, blockW, blockH, 6);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
+
+    // Stage label
+    ctx.fillStyle = stage.color;
+    ctx.font = 'bold 9px Space Mono';
+    ctx.textAlign = 'center';
+    stage.label.split('\n').forEach((line, i) => {
+      ctx.fillText(line, x, y + 22 + i*11);
+    });
+
+    // Description
+    ctx.fillStyle = 'rgba(148,163,184,0.7)';
+    ctx.font = '7px DM Sans';
+    ctx.fillText(stage.desc, x, y + blockH - 4);
+  });
+
+  // Simple connections between stages
+  for(let i = 0; i < stages.length - 1; i++){
+    const x1 = stages[i].x + blockW/2 + 8;
+    const x2 = stages[i+1].x - blockW/2 - 8;
+    const y = centerY;
+
+    // Connection line
+    ctx.strokeStyle = stages[i].color + '44';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+
+    // Arrow head
+    ctx.fillStyle = stages[i].color;
+    ctx.beginPath();
+    ctx.moveTo(x2, y);
+    ctx.lineTo(x2 - 8, y - 4);
+    ctx.lineTo(x2 - 8, y + 4);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Single animated particle
+  const particlePhase = cycleTime;
+  if(particlePhase < 0.9){
+    let px, py;
+    let currentStage = -1;
+
+    if(particlePhase < 0.25) {
+      const t = particlePhase / 0.25;
+      px = stages[0].x + (stages[1].x - stages[0].x) * t;
+      py = centerY;
+      currentStage = 0;
+    } else if(particlePhase < 0.5) {
+      const t = (particlePhase - 0.25) / 0.25;
+      px = stages[1].x + (stages[2].x - stages[1].x) * t;
+      py = centerY;
+      currentStage = 1;
+    } else if(particlePhase < 0.75) {
+      const t = (particlePhase - 0.5) / 0.25;
+      px = stages[2].x + (stages[3].x - stages[2].x) * t;
+      py = centerY;
+      currentStage = 2;
+    } else {
+      px = stages[3].x;
+      py = centerY;
+      currentStage = 3;
+    }
+
+    // === STAGE-SPECIFIC ANIMATIONS ===
+
+    // Stage 0: Radiation Incident - Flash/spark effect
+    if(currentStage === 0 && particlePhase < 0.15) {
+      const flashIntensity = Math.sin(particlePhase * 20) * 0.8;
+      ctx.save();
+      ctx.globalAlpha = flashIntensity;
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = '#fbbf24';
+      ctx.beginPath();
+      ctx.arc(px, py, 15, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+
+      // Spark lines
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = flashIntensity * 0.6;
+      for(let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2;
+        const length = 8 + Math.random() * 4;
+        ctx.beginPath();
+        ctx.moveTo(px, py);
+        ctx.lineTo(px + Math.cos(angle) * length, py + Math.sin(angle) * length);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Stage 1: Scintillation & Ionization - Light emission and charge particles
+    if(currentStage === 1) {
+      const scintillationPhase = (particlePhase - 0.25) / 0.25;
+
+      // Radiating light waves
+      ctx.save();
+      ctx.strokeStyle = stages[1].color;
+      ctx.lineWidth = 1.5;
+      ctx.globalAlpha = 0.4;
+      for(let wave = 0; wave < 3; wave++) {
+        const wavePhase = scintillationPhase - wave * 0.1;
+        if(wavePhase > 0 && wavePhase < 1) {
+          const radius = wavePhase * 25;
+          ctx.beginPath();
+          ctx.arc(px, py, radius, 0, Math.PI*2);
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+      // Small charge particles
+      ctx.fillStyle = stages[1].color;
+      ctx.globalAlpha = 0.7;
+      for(let i = 0; i < 5; i++) {
+        const angle = (i / 5) * Math.PI * 2 + scintillationPhase * 2;
+        const distance = 8 + Math.sin(scintillationPhase * 6) * 3;
+        const cx = px + Math.cos(angle) * distance;
+        const cy = py + Math.sin(angle) * distance;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 2, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Stage 2: Photomultiplier Tube - Amplification effect
+    if(currentStage === 2) {
+      const ampPhase = (particlePhase - 0.5) / 0.25;
+
+      // Growing amplification waves
+      ctx.save();
+      ctx.strokeStyle = stages[2].color;
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.6;
+      const waveCount = Math.floor(ampPhase * 8) + 1;
+      for(let i = 0; i < waveCount; i++) {
+        const waveProgress = (ampPhase - i * 0.1) * 2;
+        if(waveProgress > 0 && waveProgress < 1) {
+          const amplitude = waveProgress * 15;
+          const wavelength = 20;
+          ctx.beginPath();
+          ctx.moveTo(px - wavelength/2, py);
+          for(let x = -wavelength/2; x <= wavelength/2; x += 2) {
+            const y = py + Math.sin((x / wavelength) * Math.PI * 2) * amplitude * waveProgress;
+            ctx.lineTo(px + x, y);
+          }
+          ctx.stroke();
+        }
+      }
+      ctx.restore();
+
+      // Multiple amplified particles
+      const particleCount = Math.floor(ampPhase * 6) + 1;
+      ctx.fillStyle = stages[2].color;
+      ctx.globalAlpha = 0.8;
+      for(let i = 0; i < particleCount; i++) {
+        const offset = (i - particleCount/2) * 4;
+        ctx.beginPath();
+        ctx.arc(px + offset, py, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Stage 3: Logic Circuit - Digital pulse buildup
+    if(currentStage === 3) {
+      const logicPhase = (particlePhase - 0.75) / 0.15;
+
+      // Digital signal buildup
+      ctx.save();
+      ctx.strokeStyle = stages[3].color;
+      ctx.lineWidth = 3;
+      ctx.globalAlpha = 0.7;
+
+      // Square wave building up
+      const segments = Math.floor(logicPhase * 6) + 1;
+      ctx.beginPath();
+      ctx.moveTo(px - 20, py);
+      for(let i = 0; i < segments; i++) {
+        const segX = px - 20 + (i * 40 / segments);
+        const segY = py + (i % 2 === 0 ? -8 : 8) * logicPhase;
+        ctx.lineTo(segX, segY);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Main particle glow
+    ctx.shadowColor = '#fbbf24';
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath();
+    ctx.arc(px, py, 5, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // Simple output pulse
+  const outputPhase = (cycleTime - 0.75) * 4;
+  if(outputPhase > 0 && outputPhase < 1){
+    const pulseX = stages[3].x;
+    const pulseY = centerY + 65;
+    const pulseW = 60;
+    const pulseH = 30 * Math.sin(outputPhase * Math.PI);
+
+    // Simple pulse rectangle
+    ctx.fillStyle = 'rgba(16,185,129,0.6)';
+    ctx.fillRect(pulseX - pulseW/2, pulseY - pulseH, pulseW, pulseH);
+
+    // Pulse outline
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(pulseX - pulseW/2, pulseY - pulseH, pulseW, pulseH);
+  }
+
+  // Baseline reference
+  ctx.strokeStyle = 'rgba(100,116,139,0.3)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();
+  ctx.moveTo(stages[3].x - 40, centerY + 65);
+  ctx.lineTo(stages[3].x + 40, centerY + 65);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(100,116,139,0.5)';
+  ctx.font = '7px DM Sans';
+  ctx.textAlign = 'right';
+  ctx.fillText('0V', stages[3].x - 45, centerY + 69);
+
+  signalChainTime += 16;
+  signalChainRaf = requestAnimationFrame(drawSignalChain);
+}
+
+drawSignalChain();
+
+// ═══════════════════════════════════════════════════
+// TIMING DEMOS — 5 interactive engines
+// ═══════════════════════════════════════════════════
+
+function switchTab(i) {
+  document.querySelectorAll('.dtab').forEach((b,j)=>b.classList.toggle('active',i===j));
+  document.querySelectorAll('.tab-panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+  if(i===0) { setTimeout(tacAnimDraw,80); }
+  if(i===1) { setTimeout(()=>walkMode(currentWalkMode),80); }
+  if(i===2) { setTimeout(sbDraw,80); }
+  if(i===3) { setTimeout(updateDtTuner,80); }
+  if(i===4) { setTimeout(nimDraw,80); }
+}
+
+// ─── helper: setup canvas dpr ───
+function setupCanvas(el, h) {
+  const dpr = window.devicePixelRatio||1;
+  const w = el.parentElement.offsetWidth || 700;
+  el.style.height = h+'px';
+  el.width = w*dpr; el.height = h*dpr;
+  const ctx = el.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx, w, h};
+}
+function bg(ctx,w,h){ ctx.fillStyle='#050d18'; ctx.fillRect(0,0,w,h); }
+function grid(ctx,w,h,pad){
+  ctx.strokeStyle='rgba(59,130,246,0.08)'; ctx.lineWidth=1;
+  for(let y=pad.t;y<h-pad.b;y+=30){ ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke(); }
+  for(let x=pad.l;x<w-pad.r;x+=50){ ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,h-pad.b);ctx.stroke(); }
+}
+function axes(ctx,w,h,pad,xl,yl){
+  ctx.strokeStyle='rgba(100,116,139,0.4)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,h-pad.b);ctx.lineTo(w-pad.r,h-pad.b);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='10px DM Sans';ctx.textAlign='center';
+  ctx.fillText(xl,pad.l+(w-pad.l-pad.r)/2,h-5);
+  ctx.save();ctx.translate(12,pad.t+(h-pad.t-pad.b)/2);ctx.rotate(-Math.PI/2);ctx.fillText(yl,0,0);ctx.restore();
+  ctx.textAlign='left';
+}
+
+// ═══ DEMO 1 — TAC ANIMATION ═══
+const tacAC = document.getElementById('tac-anim-canvas');
+let tacAnimState = 'idle'; // idle | charging | stopped | output
+let tacAnimStart = 0, tacAnimDur = 0;
+let tacAnimRaf = null;
+let tacStartTime = 0, tacStopTime = 0, tacStartFired = false, tacStopFired = false;
+
+function tacAnimDraw() {
+  const {ctx,w,h} = setupCanvas(tacAC,240);
+  bg(ctx,w,h);
+  const pad = {l:60,r:20,t:24,b:40};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  grid(ctx,w,h,pad);
+  axes(ctx,w,h,pad,'Time →','Voltage (V)');
+
+  const now = performance.now();
+
+  // --- Draw START pulse marker ---
+  if(tacStartFired) {
+    const sx = pad.l + tacStartTime*cw;
+    ctx.strokeStyle='#60a5fa'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(sx,pad.t);ctx.lineTo(sx,h-pad.b);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#60a5fa';ctx.font='bold 10px Space Mono';ctx.textAlign='center';
+    ctx.fillText('START',sx,pad.t+12);
+    ctx.textAlign='left';
+  }
+
+  // --- Draw STOP marker ---
+  if(tacStopFired) {
+    const ex = pad.l + tacStopTime*cw;
+    ctx.strokeStyle='#f59e0b'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(ex,pad.t);ctx.lineTo(ex,h-pad.b);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#f59e0b';ctx.font='bold 10px Space Mono';ctx.textAlign='center';
+    ctx.fillText('STOP',ex,pad.t+12);
+    ctx.textAlign='left';
+  }
+
+  // --- Voltage ramp ---
+  if(tacStartFired) {
+    const sx = pad.l + tacStartTime*cw;
+    let ex = tacStopFired ? pad.l+tacStopTime*cw : w-pad.r;
+    const baseY = h-pad.b, topY = pad.t+10;
+    const voltH = ch * (tacStopTime - tacStartTime) * 0.95;
+    const endVoltY = baseY - voltH;
+
+    // draw ramp
+    const ramping = !tacStopFired;
+    const animProgress = tacStopFired ? 1 : Math.min(1,(now-tacAnimStart)/2200);
+    const curX = ramping ? sx + (ex-sx)*animProgress : ex;
+    const curY = ramping ? baseY - voltH*animProgress : endVoltY;
+
+    // glow fill under ramp
+    ctx.save();
+    const grad = ctx.createLinearGradient(0,endVoltY,0,baseY);
+    grad.addColorStop(0,'rgba(59,130,246,0.3)');
+    grad.addColorStop(1,'rgba(59,130,246,0.02)');
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    ctx.moveTo(sx,baseY);
+    ctx.lineTo(sx,curY+(baseY-curY)*(ramping?0:0));
+    if(ramping){
+      ctx.lineTo(curX,curY);
+    } else {
+      ctx.lineTo(ex,endVoltY);
+      ctx.lineTo(w-pad.r, endVoltY);
+    }
+    ctx.lineTo(w-pad.r,baseY);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+
+    // ramp line
+    ctx.strokeStyle='#3b82f6'; ctx.lineWidth=2.5; ctx.shadowColor='#3b82f6'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(sx,baseY);
+    if(ramping){ ctx.lineTo(curX,curY); }
+    else { ctx.lineTo(ex,endVoltY); ctx.lineTo(w-pad.r,endVoltY); }
+    ctx.stroke(); ctx.shadowBlur=0;
+
+    // voltage label
+    if(tacStopFired){
+      const vLabel = ((tacStopTime-tacStartTime)*8).toFixed(2)+' V';
+      const arrX = (sx+ex)/2;
+      ctx.fillStyle='#10b981'; ctx.font='bold 11px Space Mono'; ctx.textAlign='center';
+      ctx.fillText('V_out = '+vLabel, arrX, endVoltY-10);
+      // bracket
+      ctx.strokeStyle='#10b981'; ctx.lineWidth=1.2; ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(ex+6,endVoltY);ctx.lineTo(ex+6,baseY);
+      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ex+3,endVoltY);ctx.lineTo(ex+9,endVoltY);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ex+3,baseY);ctx.lineTo(ex+9,baseY);ctx.stroke();
+      ctx.textAlign='left';
+    }
+
+    if(ramping) tacAnimRaf = requestAnimationFrame(tacAnimDraw);
+  } else {
+    // idle — show empty axes + hint
+    ctx.fillStyle='rgba(96,165,250,0.3)'; ctx.font='12px DM Sans'; ctx.textAlign='center';
+    ctx.fillText('Click "Fire Event" to start the TAC animation', w/2, h/2);
+    ctx.textAlign='left';
+  }
+
+  // status
+  const phases = ['idle','Waiting for START pulse…','⚡ START received — capacitor charging linearly…','🛑 STOP received — voltage frozen! Output = '+((tacStopTime-tacStartTime)*8).toFixed(2)+' V',''];
+  const phaseIdx = !tacStartFired?0:!tacStopFired?1:2;
+  const msgs = ['Click "Fire Event" to start','⚡ START pulse fired — capacitor charging…','🛑 STOP fired — V_out ∝ Δt — this is your TAC output channel!'];
+  document.getElementById('tac-anim-info').textContent = msgs[phaseIdx]||'';
+}
+
+function tacAnimFire() {
+  if(!tacStartFired) {
+    tacStartFired=true; tacStopFired=false;
+    tacStartTime = 0.18 + Math.random()*0.1;
+    tacStopTime = tacStartTime + 0.25 + Math.random()*0.35;
+    tacAnimStart = performance.now();
+    tacAnimDraw();
+    setTimeout(()=>{ tacStopFired=true; tacAnimDraw(); }, 2400);
+  } else if(tacStopFired) {
+    tacAnimReset(); setTimeout(tacAnimFire,80);
+  }
+}
+function tacAnimReset(){ tacStartFired=false;tacStopFired=false;if(tacAnimRaf)cancelAnimationFrame(tacAnimRaf);tacAnimDraw(); }
+
+// ═══ DEMO 2 — TIMING WALK ═══
+const walkC = document.getElementById('walk-canvas');
+let currentWalkMode = 'led';
+
+function walkMode(mode) {
+  currentWalkMode = mode;
+  document.getElementById('walk-led-btn').style.background = mode==='led'?'#ef4444':'#0f1f38';
+  document.getElementById('walk-cfd-btn').style.background = mode==='cfd'?'#3b82f6':'#0f1f38';
+  document.getElementById('walk-led-btn').style.color = '#fff';
+  document.getElementById('walk-cfd-btn').style.color = mode==='cfd'?'#fff':'#cbd5e1';
+
+  const {ctx,w,h} = setupCanvas(walkC,220);
+  bg(ctx,w,h);
+  const pad={l:40,r:20,t:30,b:36};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  grid(ctx,w,h,pad);
+  axes(ctx,w,h,pad,'Time →','Amplitude');
+
+  const pulses = [
+    {amp:0.95, color:'#60a5fa', label:'Pulse 1 (large)'},
+    {amp:0.58, color:'#a78bfa', label:'Pulse 2 (medium)'},
+    {amp:0.30, color:'#34d399', label:'Pulse 3 (small)'},
+  ];
+  const threshold = 0.22; // leading-edge threshold (fraction of max amp)
+  const cfdFrac = 0.30;   // CFD fraction
+
+  const tStart = 0.08, sigma = 0.09;
+  const baseY = h-pad.b;
+
+  // threshold line (LED mode)
+  if(mode==='led'){
+    const thY = baseY - threshold*ch*0.92;
+    ctx.strokeStyle='rgba(239,68,68,0.7)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(pad.l,thY);ctx.lineTo(w-pad.r,thY);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(239,68,68,0.8)';ctx.font='9px Space Mono';
+    ctx.fillText('threshold',pad.l+4,thY-4);
+  }
+
+  const trigTimes = [];
+
+  pulses.forEach((p,i)=>{
+    const peakT = tStart + i*0.01; // slightly staggered arrival (same physical event)
+    const peakX = pad.l + peakT*cw + cw*0.2;
+    const peakY = baseY - p.amp*ch*0.88;
+
+    // draw gaussian pulse
+    ctx.strokeStyle=p.color; ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let px=0;px<=cw;px++){
+      const t=(px/cw - peakT - 0.18)/sigma;
+      const v = p.amp*Math.exp(-0.5*t*t);
+      const py=baseY-v*ch*0.88;
+      px===0?ctx.moveTo(pad.l+px,py):ctx.lineTo(pad.l+px,py);
+    }
+    ctx.stroke();
+
+    // label
+    ctx.fillStyle=p.color;ctx.font='9px Space Mono';
+    ctx.fillText(p.label, peakX-30, peakY-10);
+
+    // trigger time calculation
+    let trigT;
+    if(mode==='led'){
+      // find where gaussian crosses threshold from left
+      for(let px=0;px<cw;px++){
+        const t=(px/cw - peakT - 0.18)/sigma;
+        const v=p.amp*Math.exp(-0.5*t*t);
+        if(v >= threshold){ trigT = pad.l+px; break; }
+      }
+    } else {
+      // CFD: trigger at fixed fraction of peak — always at peak*(cfdFrac moment)
+      // CFD triggers at constant fraction before peak on rising edge
+      for(let px=0;px<cw;px++){
+        const t=(px/cw - peakT - 0.18)/sigma;
+        const v=p.amp*Math.exp(-0.5*t*t);
+        if(v >= p.amp*cfdFrac){ trigT=pad.l+px; break; }
+      }
+    }
+    trigTimes.push(trigT);
+
+    // draw trigger marker
+    if(trigT!==undefined){
+      const tY = mode==='led' ? baseY-threshold*ch*0.92 : baseY-p.amp*cfdFrac*ch*0.88;
+      ctx.strokeStyle=p.color; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(trigT,pad.t);ctx.lineTo(trigT,baseY);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.save();ctx.shadowColor=p.color;ctx.shadowBlur=8;
+      ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(trigT,tY,4,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+  });
+
+  // walk annotation
+  if(trigTimes.length===3 && trigTimes[0]&&trigTimes[2]){
+    const walkPx = Math.abs(trigTimes[0]-trigTimes[2]);
+    const walkNs = (walkPx/cw*500).toFixed(0);
+    if(mode==='led'){
+      ctx.strokeStyle='#ef4444'; ctx.lineWidth=2;
+      const wy=baseY-threshold*ch*0.92-18;
+      ctx.beginPath();ctx.moveTo(trigTimes[2],wy);ctx.lineTo(trigTimes[0],wy);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(trigTimes[2]-3,wy-5);ctx.lineTo(trigTimes[2],wy);ctx.lineTo(trigTimes[2]-3,wy+5);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(trigTimes[0]+3,wy-5);ctx.lineTo(trigTimes[0],wy);ctx.lineTo(trigTimes[0]+3,wy+5);ctx.stroke();
+      ctx.fillStyle='#ef4444';ctx.font='bold 10px Space Mono';ctx.textAlign='center';
+      ctx.fillText(`WALK = ${walkNs} ns`,(trigTimes[0]+trigTimes[2])/2,wy-8);
+      ctx.textAlign='left';
+      document.getElementById('walk-verdict').innerHTML=`<span style="color:#ef4444">⚠ Timing walk: ${walkNs} ns — amplitude-dependent jitter degrades timing resolution</span>`;
+    } else {
+      ctx.fillStyle='#10b981';ctx.font='bold 10px Space Mono';ctx.textAlign='center';
+      ctx.fillText('✓ All trigger at same fraction → walk = 0',(trigTimes[0]+trigTimes[2])/2,pad.t+14);
+      ctx.textAlign='left';
+      document.getElementById('walk-verdict').innerHTML=`<span style="color:#10b981">✓ CFD: walk eliminated — all 3 pulses trigger at 30% of their own peak, regardless of amplitude</span>`;
+    }
+  }
+}
+
+// ═══ DEMO 3 — SPECTRUM BUILDER ═══
+const sbC = document.getElementById('sb-canvas');
+const SB_BINS = 80;
+let sbCounts = new Array(SB_BINS).fill(0);
+let sbTotal = 0;
+const SB_PEAK_BIN = 40, SB_SIGMA = 4.5, SB_TRUE_FRAC = 0.65;
+
+function sbSample(){
+  if(Math.random() < SB_TRUE_FRAC){
+    // Gaussian sample around peak
+    const u1=Math.random(),u2=Math.random();
+    const z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    const bin=Math.round(SB_PEAK_BIN+z*SB_SIGMA);
+    if(bin>=0&&bin<SB_BINS) sbCounts[bin]++;
+  } else {
+    const bin=Math.floor(Math.random()*SB_BINS);
+    sbCounts[bin]++;
+  }
+  sbTotal++;
+}
+
+function sbDraw(){
+  const {ctx,w,h} = setupCanvas(sbC,240);
+  bg(ctx,w,h);
+  const pad={l:52,r:16,t:24,b:38};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  grid(ctx,w,h,pad);
+  axes(ctx,w,h,pad,'TAC Channel (time difference)','Counts');
+
+  const maxC = Math.max(1,...sbCounts);
+  const bw = cw/SB_BINS;
+
+  sbCounts.forEach((c,i)=>{
+    if(c===0) return;
+    const bx=pad.l+i*bw, by=h-pad.b-c/maxC*ch*0.93;
+    const isPeak = Math.abs(i-SB_PEAK_BIN)<SB_SIGMA*2.2;
+    const grad = ctx.createLinearGradient(0,by,0,h-pad.b);
+    grad.addColorStop(0,isPeak?'rgba(59,130,246,0.85)':'rgba(239,68,68,0.65)');
+    grad.addColorStop(1,isPeak?'rgba(59,130,246,0.1)':'rgba(239,68,68,0.08)');
+    ctx.fillStyle=grad;
+    ctx.fillRect(bx+0.5,by,bw-1,h-pad.b-by);
+  });
+
+  // Gaussian fit overlay
+  if(sbTotal>30){
+    ctx.strokeStyle='rgba(96,165,250,0.7)'; ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let px=0;px<cw;px++){
+      const binF=px/bw;
+      const g=maxC*SB_TRUE_FRAC*0.93*Math.exp(-0.5*Math.pow((binF-SB_PEAK_BIN)/SB_SIGMA,2));
+      const py=h-pad.b-g/maxC*ch*0.93;
+      px===0?ctx.moveTo(pad.l+px,py):ctx.lineTo(pad.l+px,py);
+    }
+    ctx.stroke();
+    // label
+    const peakX=pad.l+SB_PEAK_BIN*bw;
+    ctx.fillStyle='#60a5fa';ctx.font='9px Space Mono';ctx.textAlign='center';
+    ctx.fillText('TRUE COINCIDENCES',peakX,pad.t+12);
+    const accX=pad.l+cw*0.15;
+    ctx.fillStyle='#ef4444';ctx.fillText('ACCIDENTALS',accX,pad.t+12);
+    ctx.textAlign='left';
+  }
+
+  // stats
+  const trueEst=Math.round(sbTotal*SB_TRUE_FRAC);
+  const accEst=sbTotal-trueEst;
+  document.getElementById('sb-count').textContent=
+    `Total: ${sbTotal} | True ≈ ${trueEst} | Accidentals ≈ ${accEst}`;
+}
+
+function sbFire(n){ for(let i=0;i<n;i++) sbSample(); sbDraw(); }
+function sbReset(){ sbCounts=new Array(SB_BINS).fill(0);sbTotal=0;sbDraw(); }
+
+// ═══ DEMO 4 — Δt TUNER ═══
+const dttC = document.getElementById('dtt-canvas');
+
+function updateDtTuner(){
+  const dt=parseInt(document.getElementById('dtt-slider').value);
+  document.getElementById('dtt-val').textContent=dt+' ns';
+
+  const {ctx,w,h} = setupCanvas(dttC,240);
+  bg(ctx,w,h);
+  const pad={l:52,r:16,t:28,b:38};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  grid(ctx,w,h,pad);
+  axes(ctx,w,h,pad,'Time Difference (ns)','Counts');
+
+  // parameters
+  const R1=10000, R2=10000;
+  const Ra=2*R1*R2*(dt*1e-9);
+  const Rt=800;
+  const sigma=25; // peak sigma in ns
+  const tRange=500; // total time axis in ns
+  const peakCenter=0; // ns (centered)
+
+  // dx in ns per pixel
+  const nsPerPx = tRange/cw;
+  const centerPx = pad.l+cw/2;
+
+  // accidental flat level
+  const accLevel = Math.max(8, Ra*0.008);
+  const peak=Rt*2.5;
+  const maxY=peak*1.12;
+
+  // Δt window shading
+  const winPx = (dt/2)/nsPerPx;
+  ctx.fillStyle='rgba(59,130,246,0.07)';
+  ctx.fillRect(centerPx-winPx,pad.t,winPx*2,ch);
+  ctx.strokeStyle='rgba(59,130,246,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(centerPx-winPx,pad.t);ctx.lineTo(centerPx-winPx,h-pad.b);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(centerPx+winPx,pad.t);ctx.lineTo(centerPx+winPx,h-pad.b);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(59,130,246,0.6)';ctx.font='9px Space Mono';ctx.textAlign='center';
+  ctx.fillText('← Δt window →',centerPx,pad.t+10);ctx.textAlign='left';
+
+  // accidental flat line
+  const accY=h-pad.b-accLevel/maxY*ch;
+  ctx.strokeStyle='rgba(239,68,68,0.55)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(pad.l,accY);ctx.lineTo(w-pad.r,accY);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Gaussian peak + fill
+  const sigPx=sigma/nsPerPx;
+  ctx.beginPath();
+  ctx.fillStyle='rgba(59,130,246,0.15)';
+  for(let px=0;px<cw;px++){
+    const v=accLevel+peak*Math.exp(-0.5*Math.pow((px-cw/2)/sigPx,2));
+    const py=h-pad.b-Math.min(v/maxY,1)*ch;
+    px===0?ctx.moveTo(pad.l+px,py):ctx.lineTo(pad.l+px,py);
+  }
+  ctx.lineTo(w-pad.r,h-pad.b);ctx.lineTo(pad.l,h-pad.b);ctx.closePath();ctx.fill();
+
+  ctx.strokeStyle='#3b82f6';ctx.lineWidth=2.5;ctx.shadowColor='#3b82f6';ctx.shadowBlur=6;
+  ctx.beginPath();
+  for(let px=0;px<cw;px++){
+    const v=accLevel+peak*Math.exp(-0.5*Math.pow((px-cw/2)/sigPx,2));
+    const py=h-pad.b-Math.min(v/maxY,1)*ch;
+    px===0?ctx.moveTo(pad.l+px,py):ctx.lineTo(pad.l+px,py);
+  }
+  ctx.stroke();ctx.shadowBlur=0;
+
+  // clip indicator: if dt < 2*sigma, Gaussian is clipped
+  const efficiency = dt>0 ? Math.min(100,(erf(dt/(2*sigma*1.414))*100)) : 0;
+  const snr = Ra>0 ? (Rt/Ra).toFixed(2) : '∞';
+  const bgFrac = Ra/(Rt+Ra)*100;
+
+  document.getElementById('dtt-stats').innerHTML=`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.7rem;font-family:'Space Mono',monospace;font-size:0.78rem;">
+      <div style="color:var(--muted);font-size:0.7rem;">ACCIDENTAL RATE</div>
+      <div style="color:var(--red);font-size:1rem;">${Ra.toFixed(0)} /s</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.7rem;font-family:'Space Mono',monospace;font-size:0.78rem;">
+      <div style="color:var(--muted);font-size:0.7rem;">EFFICIENCY</div>
+      <div style="color:${efficiency>80?'#10b981':efficiency>50?'#f59e0b':'#ef4444'};font-size:1rem;">${efficiency.toFixed(1)}%</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:0.7rem;font-family:'Space Mono',monospace;font-size:0.78rem;">
+      <div style="color:var(--muted);font-size:0.7rem;">SIGNAL/NOISE</div>
+      <div style="color:${parseFloat(snr)>5?'#10b981':parseFloat(snr)>2?'#f59e0b':'#ef4444'};font-size:1rem;">${snr}</div>
+    </div>`;
+}
+
+function erf(x){ // approximation
+  const t=1/(1+0.3275911*Math.abs(x));
+  const p=t*(0.254829592+t*(-0.284496736+t*(1.421413741+t*(-1.453152027+t*1.061405429))));
+  return 1-p*Math.exp(-x*x)*(x<0?-1:1);
+}
+
+// ═══ DEMO 5 — NIM vs FPGA ═══
+const nimC = document.getElementById('nim-canvas');
+let nimAnimRaf=null, nimAnimStart=0, nimRunning=false;
+
+const NIM_STAGES  = ['Detector','Preamp','Shaper\nAmp','CFD','TAC','ADC','MCA'];
+const FPGA_STAGES = ['Detector','Input\nBuffer','FPGA\nDigital TDC','Event\nBuilder','DAQ\nStorage'];
+const NIM_COLORS  = ['#3b82f6','#8b5cf6','#8b5cf6','#06b6d4','#f59e0b','#f59e0b','#10b981'];
+const FPGA_COLORS = ['#3b82f6','#60a5fa','#a78bfa','#10b981','#10b981'];
+
+function nimDraw(progress){ // progress 0..1 for animation
+  const {ctx,w,h} = setupCanvas(nimC,300);
+  bg(ctx,w,h);
+
+  const rowH=h*0.42, gap=h*0.1;
+  const nimY=h*0.08, fpgaY=nimY+rowH+gap;
+
+  // Row labels
+  ctx.fillStyle='#f59e0b';ctx.font='bold 9px Space Mono';
+  ctx.fillText('NIM / CAMAC HARDWARE',8,nimY-6);
+  ctx.fillStyle='#60a5fa';
+  ctx.fillText('FPGA DIGITAL TDC',8,fpgaY-6);
+
+  // Timing labels
+  ctx.fillStyle='rgba(245,158,11,0.5)';ctx.font='8px Space Mono';
+  ctx.fillText('~1 µs dead time per event | fixed Δt | 1 channel',8,nimY+rowH+4);
+  ctx.fillStyle='rgba(96,165,250,0.5)';
+  ctx.fillText('~0 dead time | programmable Δt | 100s of channels',8,fpgaY+rowH+4);
+
+  function drawRow(stages, colors, y, rh, prog){
+    const n=stages.length;
+    const bw=(w-60)/(n), bh=rh*0.68, by=y+rh*0.16;
+    stages.forEach((s,i)=>{
+      const bx=30+i*bw+bw*0.08;
+      const active=prog!==undefined && prog>i/n;
+      const glow=active ? Math.min(1,(prog-i/n)*n) : 0;
+
+      // glow
+      if(glow>0.05){
+        ctx.save();ctx.shadowColor=colors[i];ctx.shadowBlur=16*glow;
+        ctx.strokeStyle=colors[i];ctx.lineWidth=2;
+        ctx.beginPath();ctx.roundRect(bx,by,bw*0.84,bh,7);ctx.stroke();
+        ctx.restore();
+      }
+      ctx.fillStyle=active?`rgba(${hexToRgb(colors[i])},${0.12+glow*0.15})`:'rgba(13,30,53,0.8)';
+      ctx.beginPath();ctx.roundRect(bx,by,bw*0.84,bh,7);ctx.fill();
+      ctx.strokeStyle=active?colors[i]:'#1e3a5f';ctx.lineWidth=1.2+glow;
+      ctx.beginPath();ctx.roundRect(bx,by,bw*0.84,bh,7);ctx.stroke();
+
+      // label (handle \n)
+      const lines=s.split('\n');
+      ctx.fillStyle=active?'#fff':'#64748b';
+      ctx.font=`${Math.max(7,bw*0.11)}px Space Mono`;ctx.textAlign='center';
+      lines.forEach((l,li)=>ctx.fillText(l,bx+bw*0.42,by+bh/2-(lines.length-1)*6+li*12));
+      ctx.textAlign='left';
+
+      // arrow
+      if(i<n-1){
+        const ax=bx+bw*0.84+2, ay=by+bh/2;
+        const col=active&&prog>(i+1)/n?colors[i]:'#1e3a5f';
+        ctx.strokeStyle=col;ctx.lineWidth=1.5;
+        ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+bw*0.12,ay);ctx.stroke();
+        ctx.fillStyle=col;ctx.beginPath();
+        ctx.moveTo(ax+bw*0.12,ay);ctx.lineTo(ax+bw*0.12-5,ay-3);ctx.lineTo(ax+bw*0.12-5,ay+3);ctx.fill();
+      }
+
+      // traveling dot
+      if(active&&glow>0&&glow<0.95&&i<n-1){
+        const dx=bx+bw*0.84+glow*bw*0.16, dy=by+bh/2;
+        ctx.save();ctx.shadowColor=colors[i];ctx.shadowBlur=12;
+        ctx.fillStyle=colors[i];ctx.beginPath();ctx.arc(dx,dy,4,0,Math.PI*2);ctx.fill();
+        ctx.restore();
+      }
+    });
+  }
+
+  const p=progress||0;
+  drawRow(NIM_STAGES,  NIM_COLORS,  nimY,  rowH, p);
+  drawRow(FPGA_STAGES, FPGA_COLORS, fpgaY, rowH, p);
+
+  // resolution comparison badge (appears at end)
+  if(p>0.85){
+    const alpha=Math.min(1,(p-0.85)/0.15);
+    ctx.globalAlpha=alpha;
+    ctx.fillStyle='rgba(245,158,11,0.1)';ctx.strokeStyle='rgba(245,158,11,0.4)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.roundRect(w-130,nimY+rowH*0.2,118,rowH*0.6,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#f59e0b';ctx.font='bold 9px Space Mono';ctx.textAlign='center';
+    ctx.fillText('~1–2 ns resolution',w-71,nimY+rowH*0.2+22);
+    ctx.fillStyle='rgba(96,165,250,0.1)';ctx.strokeStyle='rgba(96,165,250,0.4)';
+    ctx.beginPath();ctx.roundRect(w-130,fpgaY+rowH*0.2,118,rowH*0.6,8);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#60a5fa';ctx.font='bold 9px Space Mono';
+    ctx.fillText('~13 ps resolution',w-71,fpgaY+rowH*0.2+22);
+    ctx.textAlign='left';ctx.globalAlpha=1;
+  }
+}
+
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+function nimFire(){
+  if(nimRunning) return;
+  nimRunning=true; nimAnimStart=performance.now();
+  function step(){
+    const t=Math.min(1,(performance.now()-nimAnimStart)/2600);
+    nimDraw(t);
+    if(t<1){ nimAnimRaf=requestAnimationFrame(step); }
+    else { nimRunning=false; }
+  }
+  step();
+}
+
+// init all demos
+setTimeout(()=>{
+  tacAnimDraw();
+  walkMode('led');
+  sbDraw();
+  updateDtTuner();
+  nimDraw(0);
+},300);
+window.addEventListener('resize',()=>{
+  tacAnimDraw(); walkMode(currentWalkMode); sbDraw(); updateDtTuner(); nimDraw(0);
+});
+
+// ─── ACCIDENTAL CALCULATOR ───
+function calcAccidental(){
+  const r1 = parseFloat(document.getElementById('calc-r1').value)||0;
+  const r2 = parseFloat(document.getElementById('calc-r2').value)||0;
+  const dt = parseFloat(document.getElementById('calc-dt').value)||0;
+  const rt = parseFloat(document.getElementById('calc-rt').value)||0;
+  const ra = 2*r1*r2*(dt*1e-9);
+  const snr = ra > 0 ? (rt/ra).toFixed(2) : 'N/A';
+  const pct = rt+ra > 0 ? ((ra/(rt+ra))*100).toFixed(1) : '0';
+  document.getElementById('calc-result').innerHTML =
+    `R_A = 2 × ${r1.toLocaleString()} × ${r2.toLocaleString()} × ${dt}×10⁻⁹ = <strong>${ra.toFixed(2)} /s</strong> &nbsp;|&nbsp; SNR = ${snr} &nbsp;|&nbsp; Accidentals = ${pct}% of total`;
+}
+
+// ─── APP CARDS ───
+function toggleApp(el){
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.app-card').forEach(c=>c.classList.remove('open'));
+  if(!wasOpen) el.classList.add('open');
+}
+
+// ─── QUIZ ───
+const questions = [
+  {q:"What is the fundamental electronic operation performed by a coincidence unit?",opts:["OR gate","NAND gate","AND gate","XOR gate"],ans:2,exp:"A coincidence unit fires only when ALL input channels receive a signal within Δt — this is exactly an AND gate operation."},
+  {q:"What does the resolving time Δt represent?",opts:["The dead time of the detector","The acceptance window within which two pulses are considered coincident","The shaping time of the amplifier","The half-life of the source"],ans:1,exp:"Δt is the time window — if two pulses arrive within this interval, they are accepted as a coincidence event."},
+  {q:"In the formula R_A = 2·R₁·R₂·Δt, what does the factor of 2 account for?",opts:["Two detectors","Signal amplification factor","Either detector can arrive first (A before B or B before A)","Uncertainty in timing"],ans:2,exp:"Since either detector can trigger first (A then B, or B then A), both orderings contribute to the accidental rate — hence the factor of 2."},
+  {q:"What advantage does a Constant Fraction Discriminator (CFD) have over a leading-edge discriminator?",opts:["Higher energy resolution","Eliminates timing walk — triggers at a fixed fraction of pulse height","Cheaper to manufacture","Works only with scintillators"],ans:1,exp:"A leading-edge discriminator triggers at a fixed voltage, so large pulses trigger earlier. The CFD triggers at a fixed fraction of peak height — eliminating this 'walk' error and achieving ~20 ps timing resolution."},
+  {q:"In a TAC timing spectrum, where do true coincidences appear?",opts:["As a flat background","As a random scatter","As a Gaussian peak at the time difference of the correlated signals","As an exponential tail"],ans:2,exp:"True coincidences are physically correlated (same event, fixed time difference) — they form a Gaussian peak. The flat background comes from accidental coincidences."},
+  {q:"What technique is used to experimentally measure the accidental coincidence rate?",opts:["Increasing Δt","Introducing a known delay (≫ Δt) in one channel","Using a weaker source","Switching off one detector"],ans:1,exp:"Introducing a delay much larger than Δt destroys any physical correlation. Any coincidences in the delayed window are purely accidental — their rate directly measures R_A."},
+  {q:"The Cowan–Reines experiment (1956) detected neutrinos using what type of coincidence?",opts:["2-fold gamma coincidence","Single detector with high threshold","4-fold coincidence (prompt e⁺ annihilation + delayed neutron capture)","Beta-gamma coincidence only"],ans:2,exp:"The signature was: two 511 keV prompt gammas from e⁺ annihilation, PLUS a delayed neutron capture gamma ~5 µs later — a 4-fold coincidence that was essentially unique to anti-neutrino inverse beta decay."},
+  {q:"By what factor does the LHC coincidence trigger system reduce the event rate?",opts:["100×","1,000×","10,000×","~40,000,000×"],ans:3,exp:"The LHC produces 40 million bunch crossings per second. The multi-level trigger system reduces this to ~1,000 events/second written to storage — a reduction factor of ~40 million to 1."}
+];
+let qIndex = 0, score = 0, answered = false;
+
+function renderQuiz(){
+  if(qIndex >= questions.length){
+    document.getElementById('quiz-content').innerHTML = `
+      <div class="quiz-score-box">
+        <div class="quiz-score-num">${score}/${questions.length}</div>
+        <div style="font-size:1.1rem;color:var(--white);margin:0.5rem 0;">${score>=6?'Excellent! 🎉':score>=4?'Good effort! 👍':'Keep studying! 📚'}</div>
+        <div style="color:var(--muted);font-size:0.9rem;margin-bottom:1.5rem;">You answered ${score} out of ${questions.length} correctly.</div>
+        <button class="btn btn-primary" onclick="restartQuiz()">Retake Quiz</button>
+      </div>`;
+    return;
+  }
+  const q = questions[qIndex];
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-options">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="selectAnswer(${i})">${o}</button>`).join('')}</div>
+    <div class="quiz-feedback" id="qfb"></div>
+    <div class="quiz-nav">
+      <div class="quiz-progress">Question ${qIndex+1} of ${questions.length} · Score: ${score}</div>
+      <button class="btn btn-ghost" id="next-btn" onclick="nextQuestion()" style="display:none;">Next →</button>
+    </div>`;
+  answered = false;
+}
+
+function selectAnswer(i){
+  if(answered) return;
+  answered = true;
+  const q = questions[qIndex];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts[i].classList.add(i===q.ans?'correct':'wrong');
+  opts[q.ans].classList.add('correct');
+  opts.forEach(o=>o.disabled=true);
+  if(i===q.ans) score++;
+  const fb = document.getElementById('qfb');
+  fb.textContent = (i===q.ans?'✓ Correct! ':'✗ Incorrect. ')+q.exp;
+  fb.className = 'quiz-feedback show '+(i===q.ans?'ok':'bad');
+  document.getElementById('next-btn').style.display='inline-block';
+}
+function nextQuestion(){ qIndex++; renderQuiz(); }
+function restartQuiz(){ qIndex=0; score=0; renderQuiz(); }
+
+// ═══════════════════════════════════════════════════
+// INTRO DEMOS — 5 interactive engines
+// ═══════════════════════════════════════════════════
+
+function switchIntroTab(i) {
+  document.querySelectorAll('#intro .dtab').forEach((b,j)=>b.classList.toggle('active',i===j));
+  document.querySelectorAll('.intro-panel').forEach((p,j)=>p.classList.toggle('active',i===j));
+  if(i===0) setTimeout(srcInit,80);
+  if(i===1) setTimeout(()=>oscMode(currentOscMode),80);
+  if(i===2) setTimeout(clkInit,80);
+  if(i===3) setTimeout(updateSNR,80);
+}
+
+// ─────────────────────────────────
+// ① SOURCE & DETECTORS
+// ─────────────────────────────────
+const srcC = document.getElementById('src-canvas');
+let srcRaf=null, srcRunning=true;
+let srcParticles=[], srcFlashes=[], srcCoincCount=0, srcBgCount=0, srcTotalCount=0;
+let srcLastEmit=0;
+
+function srcSetup(){
+  const dpr=window.devicePixelRatio||1;
+  const w=srcC.parentElement.offsetWidth||700;
+  const h=300;
+  srcC.style.height=h+'px';
+  srcC.width=w*dpr; srcC.height=h*dpr;
+  srcC.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+  return {w,h};
+}
+
+function srcEmit(w,h){
+  const cx=w/2, cy=h/2;
+  // true coincidence particle — shoots toward both detectors roughly
+  if(Math.random()<0.35){
+    // pair of correlated particles
+    [-1,1].forEach(side=>{
+      const angle = (side===1 ? 0 : Math.PI) + (Math.random()-0.5)*0.3;
+      srcParticles.push({x:cx,y:cy,vx:Math.cos(angle)*5.5,vy:Math.sin(angle)*5.5,
+        color:'#f59e0b',type:'true',age:0,maxAge:110,side,paired:true});
+    });
+  } else {
+    // random background — fires in any direction
+    const angle=Math.random()*Math.PI*2;
+    srcParticles.push({x:cx,y:cy,vx:Math.cos(angle)*4.5,vy:Math.sin(angle)*4.5,
+      color:'rgba(100,116,139,0.7)',type:'bg',age:0,maxAge:100,paired:false});
+  }
+}
+
+function srcFrame(){
+  if(!srcRunning){ srcRaf=requestAnimationFrame(srcFrame); return; }
+  const {w,h}=srcSetup();
+  const ctx=srcC.getContext('2d');
+  ctx.fillStyle='rgba(5,13,24,0.18)'; ctx.fillRect(0,0,w,h);
+
+  const cx=w/2, cy=h/2;
+  const detR=28;
+  const dAx=cx-w*0.38, dAy=cy;
+  const dBx=cx+w*0.38, dBy=cy;
+
+  // bg grid
+  ctx.strokeStyle='rgba(59,130,246,0.04)'; ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+
+  // source
+  ctx.save();
+  ctx.shadowColor='#f59e0b'; ctx.shadowBlur=20;
+  ctx.fillStyle='#f59e0b'; ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='rgba(245,158,11,0.15)'; ctx.beginPath(); ctx.arc(cx,cy,22,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f59e0b'; ctx.font='bold 10px Space Mono'; ctx.textAlign='center';
+  ctx.fillText('☢',cx,cy+4);
+  ctx.restore();
+
+  // detectors
+  function drawDet(dx,dy,label,glow,hit){
+    ctx.save();
+    if(glow>0){ctx.shadowColor=glow>0.5?'#10b981':'#3b82f6';ctx.shadowBlur=22*glow;}
+    ctx.fillStyle=hit?'rgba(16,185,129,0.2)':'rgba(13,30,53,0.9)';
+    ctx.strokeStyle=glow>0.3?'#10b981':'#3b82f6'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect(dx-detR,dy-detR*1.4,detR*2,detR*2.8,8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=glow>0.3?'#10b981':'#60a5fa'; ctx.font='bold 9px Space Mono'; ctx.textAlign='center';
+    ctx.fillText('DET',dx,dy-4); ctx.fillText(label,dx,dy+10);
+    ctx.restore();
+  }
+
+  // track detector glow state
+  const now=performance.now();
+  if(!srcC._glowA) srcC._glowA=0;
+  if(!srcC._glowB) srcC._glowB=0;
+  if(!srcC._hitA) srcC._hitA=false;
+  if(!srcC._hitB) srcC._hitB=false;
+  srcC._glowA=Math.max(0,srcC._glowA-0.04);
+  srcC._glowB=Math.max(0,srcC._glowB-0.04);
+
+  // flashes
+  srcFlashes=srcFlashes.filter(f=>{
+    f.age++; const a=1-f.age/f.maxAge;
+    ctx.save(); ctx.globalAlpha=a;
+    ctx.font=`bold ${f.size||14}px DM Sans`; ctx.fillStyle=f.color;
+    ctx.textAlign='center'; ctx.fillText(f.text,f.x,f.y-f.age*0.8); ctx.restore();
+    return f.age<f.maxAge;
+  });
+
+  // particles
+  let pairedHit={A:false,B:false};
+  srcParticles=srcParticles.filter(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.age++;
+    const alpha=Math.max(0,1-p.age/p.maxAge);
+
+    // check detector hit
+    const hitA=Math.abs(p.x-dAx)<detR+4 && Math.abs(p.y-dAy)<detR*1.4+4;
+    const hitB=Math.abs(p.x-dBx)<detR+4 && Math.abs(p.y-dBy)<detR*1.4+4;
+
+    if(hitA && !p.hitA){
+      p.hitA=true; srcC._glowA=1; srcC._hitA=true;
+      if(p.paired) pairedHit.A=true;
+      else { srcBgCount++; srcTotalCount++;
+        srcFlashes.push({x:dAx,y:dAy-40,text:'BG',color:'#64748b',age:0,maxAge:40,size:11}); }
+    }
+    if(hitB && !p.hitB){
+      p.hitB=true; srcC._glowB=1; srcC._hitB=true;
+      if(p.paired) pairedHit.B=true;
+      else { srcBgCount++; srcTotalCount++;
+        srcFlashes.push({x:dBx,y:dBy-40,text:'BG',color:'#64748b',age:0,maxAge:40,size:11}); }
+    }
+
+    // draw trail
+    ctx.save(); ctx.globalAlpha=alpha*0.8;
+    ctx.shadowColor=p.color; ctx.shadowBlur=6;
+    ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+
+    return p.age<p.maxAge && !((hitA||hitB) && p.age>5);
+  });
+
+  // coincidence flash when both paired particles hit
+  if(pairedHit.A && pairedHit.B){
+    srcCoincCount++; srcTotalCount++;
+    srcFlashes.push({x:cx,y:cy-60,text:'✓ COINCIDENCE!',color:'#10b981',age:0,maxAge:70,size:15});
+    srcFlashes.push({x:dAx,y:dAy-55,text:'✓',color:'#10b981',age:0,maxAge:50,size:18});
+    srcFlashes.push({x:dBx,y:dBy-55,text:'✓',color:'#10b981',age:0,maxAge:50,size:18});
+    // coincidence line
+    ctx.save(); ctx.strokeStyle='rgba(16,185,129,0.5)'; ctx.lineWidth=2; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(dAx+detR,dAy); ctx.lineTo(cx,cy); ctx.lineTo(dBx-detR,dBy); ctx.stroke();
+    ctx.restore();
+  }
+
+  drawDet(dAx,dAy,'A',srcC._glowA,srcC._glowA>0.3);
+  drawDet(dBx,dBy,'B',srcC._glowB,srcC._glowB>0.3);
+
+  // emit
+  if(now-srcLastEmit>280+Math.random()*220){ srcEmit(w,h); srcLastEmit=now; }
+
+  // stats
+  const snr = srcBgCount>0?(srcCoincCount/(srcBgCount+0.001)).toFixed(2):'∞';
+  document.getElementById('src-stats').innerHTML=
+    `<span style="color:#10b981">✓ Coincidences: ${srcCoincCount}</span>`+
+    `<span style="color:#64748b">BG Rejected: ${srcBgCount}</span>`+
+    `<span style="color:var(--accent2)">SNR: ${snr}</span>`;
+
+  srcRaf=requestAnimationFrame(srcFrame);
+}
+
+function srcInit(){ if(srcRaf) cancelAnimationFrame(srcRaf); srcFrame(); }
+function srcToggle(){
+  srcRunning=!srcRunning;
+  document.getElementById('src-btn').textContent=srcRunning?'⏸ Pause':'▶ Resume';
+}
+
+// ─────────────────────────────────
+// ② SIGNAL & NOISE
+// ─────────────────────────────────
+const oscC = document.getElementById('osc-canvas');
+let currentOscMode='raw';
+let oscRaf=null, oscT=0;
+
+function oscSetup(){
+  const dpr=window.devicePixelRatio||1;
+  const w=oscC.parentElement.offsetWidth||700;
+  const h=230;
+  oscC.style.height=h+'px';
+  oscC.width=w*dpr; oscC.height=h*dpr;
+  const ctx=oscC.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,w,h};
+}
+
+// Pre-generate deterministic noise + signal seeds
+const OSC_SEED=[];
+for(let i=0;i<1200;i++) OSC_SEED.push(Math.random());
+function osc_noise(i){ return OSC_SEED[i%OSC_SEED.length]; }
+
+function oscDraw(){
+  const {ctx,w,h}=oscSetup();
+  const pad={l:45,r:15,t:18,b:30};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  ctx.fillStyle='#050d18'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(59,130,246,0.07)'; ctx.lineWidth=1;
+  for(let y=pad.t;y<h-pad.b;y+=ch/4){ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();}
+  for(let x=pad.l;x<w-pad.r;x+=cw/10){ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,h-pad.b);ctx.stroke();}
+
+  const baseY=pad.t+ch*0.72;
+  const mode=currentOscMode;
+
+  // signal pulses (true events) — fixed positions
+  const sigPos=[0.12,0.35,0.58,0.81];
+  // bg noise spikes — random seeded
+  const bgSpikes=[];
+  for(let i=0;i<40;i++) bgSpikes.push(osc_noise(i*7+3));
+
+  if(mode==='raw'){
+    // draw all noise spikes
+    ctx.strokeStyle='rgba(239,68,68,0.55)'; ctx.lineWidth=1.5;
+    bgSpikes.forEach((pos,i)=>{
+      const x=pad.l+pos*cw;
+      const h2=(osc_noise(i*3+1)*0.55+0.08)*ch*0.7;
+      ctx.beginPath(); ctx.moveTo(x,baseY); ctx.lineTo(x-2,baseY-h2*0.6);
+      ctx.lineTo(x,baseY-h2); ctx.lineTo(x+2,baseY-h2*0.6); ctx.lineTo(x+4,baseY);
+      ctx.stroke();
+    });
+    // signal pulses (hard to see)
+    sigPos.forEach(pos=>{
+      const x=pad.l+pos*cw;
+      ctx.strokeStyle='rgba(59,130,246,0.8)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(x-2,baseY); ctx.lineTo(x,baseY-ch*0.55);
+      ctx.lineTo(x+2,baseY-ch*0.55); ctx.lineTo(x+4,baseY); ctx.stroke();
+    });
+    // baseline
+    ctx.strokeStyle='rgba(96,165,250,0.3)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(pad.l,baseY); ctx.lineTo(w-pad.r,baseY); ctx.stroke();
+    ctx.setLineDash([]);
+    // label
+    ctx.fillStyle='#ef4444'; ctx.font='bold 10px Space Mono'; ctx.textAlign='right';
+    ctx.fillText('RAW — no filtering',w-pad.r-4,pad.t+14);
+    document.getElementById('osc-verdict').innerHTML=`<span style="color:#ef4444">⚠ ${bgSpikes.length} noise spikes + 4 real events — impossible to distinguish</span>`;
+  } else {
+    // filtered — only real signal peaks remain
+    sigPos.forEach((pos,i)=>{
+      const x=pad.l+pos*cw;
+      ctx.save(); ctx.shadowColor='#10b981'; ctx.shadowBlur=12;
+      ctx.strokeStyle='#10b981'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(x-2,baseY); ctx.lineTo(x,baseY-ch*0.58);
+      ctx.lineTo(x+2,baseY-ch*0.58); ctx.lineTo(x+5,baseY); ctx.stroke();
+      ctx.restore();
+      ctx.fillStyle='rgba(16,185,129,0.1)';
+      ctx.fillRect(x-8,pad.t,16,ch);
+      ctx.fillStyle='#10b981'; ctx.font='9px Space Mono'; ctx.textAlign='center';
+      ctx.fillText('✓',x,baseY-ch*0.62);
+    });
+    // flat clean baseline
+    ctx.strokeStyle='rgba(16,185,129,0.3)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(pad.l,baseY); ctx.lineTo(w-pad.r,baseY); ctx.stroke();
+    ctx.fillStyle='#10b981'; ctx.font='bold 10px Space Mono'; ctx.textAlign='right';
+    ctx.fillText('COINCIDENCE FILTERED',w-pad.r-4,pad.t+14);
+    document.getElementById('osc-verdict').innerHTML=`<span style="color:#10b981">✓ Only 4 true events remain — background reduced by ${Math.round(bgSpikes.length/(bgSpikes.length+4)*100)}%</span>`;
+  }
+
+  // axes
+  ctx.strokeStyle='rgba(100,116,139,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,h-pad.b);ctx.lineTo(w-pad.r,h-pad.b);ctx.stroke();
+  ctx.fillStyle='#64748b'; ctx.font='9px DM Sans'; ctx.textAlign='center';
+  ctx.fillText('Time →',pad.l+cw/2,h-6);
+  ctx.save();ctx.translate(12,pad.t+ch/2);ctx.rotate(-Math.PI/2);ctx.fillText('Signal (V)',0,0);ctx.restore();
+  ctx.textAlign='left';
+}
+
+function oscMode(m){
+  currentOscMode=m;
+  document.getElementById('osc-raw-btn').style.background=m==='raw'?'#ef4444':'#0f1f38';
+  document.getElementById('osc-raw-btn').style.color='#fff';
+  document.getElementById('osc-filt-btn').style.background=m==='filtered'?'#10b981':'#0f1f38';
+  document.getElementById('osc-filt-btn').style.color=m==='filtered'?'#fff':'#cbd5e1';
+  oscDraw();
+}
+
+// ─────────────────────────────────
+// ③ TWO CLOCKS
+// ─────────────────────────────────
+const clkC=document.getElementById('clk-canvas');
+let clkRaf=null, clkRunning=true;
+let clkDt=120; // ms visual window
+let clkEventsA=[], clkEventsB=[], clkCoincidences=0, clkTotalA=0, clkTotalB=0;
+let clkLastA=0, clkLastB=0, clkHistory=[], clkNow=0;
+const CLK_WINDOW=4000; // ms of history shown
+const CLK_FIRE_RATE=800; // ms avg between fires per detector
+
+function clkSetup(){
+  const dpr=window.devicePixelRatio||1;
+  const w=clkC.parentElement.offsetWidth||700;
+  const h=260;
+  clkC.style.height=h+'px';
+  clkC.width=w*dpr; clkC.height=h*dpr;
+  clkC.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+  return{w,h};
+}
+
+function clkFrame(ts){
+  if(!clkRaf) return;
+  clkNow=ts;
+  const {w,h}=clkSetup();
+  const ctx=clkC.getContext('2d');
+
+  // fire events randomly
+  if(clkRunning){
+    if(ts-clkLastA > CLK_FIRE_RATE*(0.4+Math.random()*1.2)){
+      clkEventsA.push({t:ts,y:0}); clkLastA=ts; clkTotalA++;
+    }
+    if(ts-clkLastB > CLK_FIRE_RATE*(0.4+Math.random()*1.2)){
+      clkEventsB.push({t:ts,y:0}); clkLastB=ts; clkTotalB++;
+    }
+    // check for coincidences
+    clkEventsA.forEach(a=>{
+      clkEventsB.forEach(b=>{
+        if(!a.coinc && !b.coinc && Math.abs(a.t-b.t)<clkDt){
+          a.coinc=true; b.coinc=true; clkCoincidences++;
+          clkHistory.push({t:Math.max(a.t,b.t),type:'coinc'});
+        }
+      });
+    });
+  }
+
+  // prune old events
+  const cutoff=ts-CLK_WINDOW*1.2;
+  clkEventsA=clkEventsA.filter(e=>e.t>cutoff);
+  clkEventsB=clkEventsB.filter(e=>e.t>cutoff);
+  clkHistory=clkHistory.filter(e=>e.t>cutoff);
+
+  ctx.fillStyle='#050d18'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(59,130,246,0.06)'; ctx.lineWidth=1;
+  for(let x=0;x<w;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+
+  const pad={l:70,r:16,t:20,b:20};
+  const cw=w-pad.l-pad.r, rowH=h/3;
+  const rowAy=pad.t+rowH*0.5, rowBy=pad.t+rowH*1.5, rowCy=pad.t+rowH*2.5;
+
+  // row labels
+  ctx.fillStyle='#60a5fa';ctx.font='bold 9px Space Mono';ctx.textAlign='right';
+  ctx.fillText('DET A',pad.l-6,rowAy+4);
+  ctx.fillStyle='#a78bfa';
+  ctx.fillText('DET B',pad.l-6,rowBy+4);
+  ctx.fillStyle='#10b981';
+  ctx.fillText('COINC',pad.l-6,rowCy+4);
+  ctx.textAlign='left';
+
+  // baselines
+  [[rowAy,'rgba(96,165,250,0.2)'],[rowBy,'rgba(167,139,250,0.2)'],[rowCy,'rgba(16,185,129,0.2)']].forEach(([y,c])=>{
+    ctx.strokeStyle=c;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+  });
+
+  // time axis: right = now
+  function tToX(t){ return pad.l + cw*(1-(ts-t)/CLK_WINDOW); }
+
+  // Δt window visualization near right edge (current time)
+  const winH=18, winX=w-pad.r-8;
+  const dtPx=(clkDt/CLK_WINDOW)*cw;
+  ctx.fillStyle='rgba(245,158,11,0.12)';
+  ctx.fillRect(winX-dtPx, rowAy-winH, dtPx, (rowBy-rowAy)+winH*2);
+  ctx.strokeStyle='rgba(245,158,11,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(winX-dtPx,rowAy-winH*1.5);ctx.lineTo(winX-dtPx,rowBy+winH*1.5);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#f59e0b';ctx.font='8px Space Mono';ctx.textAlign='center';
+  ctx.fillText('Δt',winX-dtPx/2,rowAy-winH*1.8);ctx.textAlign='left';
+
+  // draw A events
+  clkEventsA.forEach(e=>{
+    const x=tToX(e.t); if(x<pad.l||x>w-pad.r) return;
+    const age=ts-e.t; const glow=Math.max(0,1-age/300);
+    ctx.save();if(glow>0){ctx.shadowColor='#60a5fa';ctx.shadowBlur=14*glow;}
+    ctx.strokeStyle=e.coinc?'#10b981':'#60a5fa';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x,rowAy+12);ctx.lineTo(x,rowAy-20);ctx.stroke();
+    ctx.restore();
+  });
+  // draw B events
+  clkEventsB.forEach(e=>{
+    const x=tToX(e.t); if(x<pad.l||x>w-pad.r) return;
+    const age=ts-e.t; const glow=Math.max(0,1-age/300);
+    ctx.save();if(glow>0){ctx.shadowColor='#a78bfa';ctx.shadowBlur=14*glow;}
+    ctx.strokeStyle=e.coinc?'#10b981':'#a78bfa';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x,rowBy+12);ctx.lineTo(x,rowBy-20);ctx.stroke();
+    ctx.restore();
+  });
+  // draw coincidence row
+  clkHistory.forEach(e=>{
+    const x=tToX(e.t); if(x<pad.l||x>w-pad.r) return;
+    const age=ts-e.t; const glow=Math.max(0,1-age/400);
+    ctx.save();if(glow>0.1){ctx.shadowColor='#10b981';ctx.shadowBlur=18*glow;}
+    ctx.fillStyle='#10b981';ctx.beginPath();ctx.arc(x,rowCy,5+glow*3,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    if(glow>0.5){ ctx.fillStyle=`rgba(16,185,129,${glow*0.7})`;ctx.font='bold 10px DM Sans';ctx.textAlign='center';
+      ctx.fillText('✓',x,rowCy-18);ctx.textAlign='left'; }
+  });
+
+  // stats
+  const rate=clkTotalA>0?((clkCoincidences/((ts/1000)||1))).toFixed(1):'0';
+  document.getElementById('clk-stats').innerHTML=
+    `<span style="color:#60a5fa">Det A fires: ${clkTotalA}</span>`+
+    `<span style="color:#a78bfa">Det B fires: ${clkTotalB}</span>`+
+    `<span style="color:#10b981">✓ Coincidences: ${clkCoincidences}</span>`+
+    `<span style="color:var(--gold)">Δt = ${clkDt} ms</span>`;
+
+  clkRaf=requestAnimationFrame(clkFrame);
+}
+
+function clkInit(){ if(clkRaf) cancelAnimationFrame(clkRaf); clkRaf=requestAnimationFrame(clkFrame); }
+function clkToggle(){ clkRunning=!clkRunning; document.getElementById('clk-btn').textContent=clkRunning?'⏸ Pause':'▶ Resume'; }
+function clkReset(){ clkEventsA=[];clkEventsB=[];clkCoincidences=0;clkTotalA=0;clkTotalB=0;clkHistory=[]; }
+function updateClockDt(){ clkDt=parseInt(document.getElementById('clk-dt-slider').value); document.getElementById('clk-dt-val').textContent=clkDt+' ms'; }
+
+// ─────────────────────────────────
+// ⑤ SIGNAL vs NOISE
+// ─────────────────────────────────
+const snrC=document.getElementById('snr-canvas');
+
+function updateSNR(){
+  const req=parseInt(document.getElementById('snr-req-slider').value);
+  document.getElementById('snr-req-val').textContent=req+' detector'+(req>1?'s':'');
+
+  const dpr=window.devicePixelRatio||1;
+  const w=snrC.parentElement.offsetWidth||700;
+  const h=260;
+  snrC.style.height=h+'px';
+  snrC.width=w*dpr; snrC.height=h*dpr;
+  const ctx=snrC.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  ctx.fillStyle='#050d18'; ctx.fillRect(0,0,w,h);
+
+  const pad={l:55,r:20,t:24,b:38};
+  const cw=w-pad.l-pad.r, ch=h-pad.t-pad.b;
+  ctx.strokeStyle='rgba(59,130,246,0.07)';ctx.lineWidth=1;
+  for(let y=pad.t;y<h-pad.b;y+=ch/5){ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();}
+
+  // Model: each detector has efficiency ε=0.8 for true events, bg rate drops as (0.1)^(n-1) per extra detector
+  const detEff=0.80;
+  const bgRate=1000; // arbitrary units per detector
+  const sigRate=100;
+  const bgReduction=Math.pow(0.1,req-1);
+  const sigReduction=Math.pow(detEff,req-1);
+
+  const bgNow=bgRate*bgReduction;
+  const sigNow=sigRate*sigReduction;
+  const snr=sigNow/bgNow;
+
+  const maxVal=Math.max(bgRate,sigRate)*1.15;
+  const barW=Math.min(120,(cw-80)/4);
+
+  const categories=[
+    {label:'Background',val:bgNow,maxV:bgRate,color:'#ef4444',x:pad.l+cw*0.18},
+    {label:'True Signal',val:sigNow,maxV:sigRate,color:'#10b981',x:pad.l+cw*0.5},
+    {label:'SNR',val:snr,maxV:20,color:'#f59e0b',x:pad.l+cw*0.82,isRatio:true},
+  ];
+
+  categories.forEach(cat=>{
+    const barH=Math.max(2,(cat.val/maxVal)*ch*0.85);
+    const bx=cat.x-barW/2, by=h-pad.b-barH;
+
+    // shadow glow
+    ctx.save();ctx.shadowColor=cat.color;ctx.shadowBlur=16;
+    const grad=ctx.createLinearGradient(0,by,0,h-pad.b);
+    grad.addColorStop(0,cat.color);
+    grad.addColorStop(1,cat.color+'22');
+    ctx.fillStyle=grad;
+    ctx.beginPath();ctx.roundRect(bx,by,barW,barH,6);ctx.fill();
+    ctx.restore();
+
+    // value label
+    ctx.fillStyle='#fff';ctx.font='bold 11px Space Mono';ctx.textAlign='center';
+    const displayVal=cat.isRatio?snr.toFixed(2):Math.round(cat.val).toString();
+    ctx.fillText(displayVal,cat.x,by-8);
+
+    // category label
+    ctx.fillStyle=cat.color;ctx.font='9px Space Mono';
+    ctx.fillText(cat.label,cat.x,h-pad.b+14);
+
+    // reduction indicator
+    if(!cat.isRatio&&req>1){
+      const pct=((1-cat.val/cat.maxV)*100).toFixed(0);
+      const col=cat.label==='Background'?'#10b981':'#f59e0b';
+      ctx.fillStyle=col;ctx.font='8px DM Sans';
+      ctx.fillText((cat.label==='Background'?'↓ ':'↓ ')+pct+'% vs 1 det',cat.x,by-22);
+    }
+    ctx.textAlign='left';
+  });
+
+  // axes
+  ctx.strokeStyle='rgba(100,116,139,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t);ctx.lineTo(pad.l,h-pad.b);ctx.lineTo(w-pad.r,h-pad.b);ctx.stroke();
+
+  // requirement indicator
+  for(let d=1;d<=4;d++){
+    const dotX=pad.l+cw*(d/5)*0.85+10, dotY=pad.t+10;
+    ctx.fillStyle=d<=req?'#3b82f6':'#1e3a5f';
+    ctx.strokeStyle=d<=req?'#3b82f6':'#334155';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(dotX,dotY,7,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 9px Space Mono';ctx.textAlign='center';
+    ctx.fillText(d,dotX,dotY+3);
+    ctx.textAlign='left';
+  }
+  ctx.fillStyle='#64748b';ctx.font='8px Space Mono';
+  ctx.fillText('detectors required →',pad.l+4,pad.t+13);
+
+  // stats row
+  document.getElementById('snr-stats').innerHTML=`
+    <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:0.7rem;font-family:'Space Mono',monospace;font-size:0.78rem;">
+      <div style="color:var(--muted);font-size:0.7rem;">BACKGROUND</div>
+      <div style="color:#ef4444;font-size:1rem;">${Math.round(bgNow)} /s</div>
+      <div style="color:var(--muted);font-size:0.7rem;margin-top:0.2rem;">${req>1?'↓ '+(((1-bgNow/bgRate)*100).toFixed(0))+'% vs 1 det':' — baseline'}</div>
+    </div>
+    <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:0.7rem;font-family:'Space Mono',monospace;font-size:0.78rem;">
+      <div style="color:var(--muted);font-size:0.7rem;">TRUE SIGNAL</div>
+      <div style="color:#10b981;font-size:1rem;">${Math.round(sigNow)} /s</div>
+      <div style="color:var(--muted);font-size:0.7rem;margin-top:0.2rem;">${req>1?'↓ '+(((1-sigNow/sigRate)*100).toFixed(0))+'% efficiency cost':' — baseline'}</div>
+    </div>
+    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:0.7rem;font-family:'Space Mono',monospace;font-size:0.78rem;">
+      <div style="color:var(--muted);font-size:0.7rem;">SIGNAL / NOISE</div>
+      <div style="color:${snr>5?'#10b981':snr>1?'#f59e0b':'#ef4444'};font-size:1rem;">${snr.toFixed(2)}</div>
+      <div style="color:var(--muted);font-size:0.7rem;margin-top:0.2rem;">${snr>5?'Excellent':'snr>1?Acceptable:Poor'}</div>
+    </div>`;
+}
+
+// init intro demos on load
+setTimeout(()=>{
+  srcInit();
+  oscMode('raw');
+  clkInit();
+  updateSNR();
+},400);
+window.addEventListener('resize',()=>{
+  oscDraw(); updateSNR(); drawSignalChain();
+});
+
+// ─────────────────────────────────────────────────────────
+// ANIMATED SIGNAL CHAIN
+// ─────────────────────────────────────────────────────────
+const CC = document.getElementById('chain-canvas');
+const cx = CC.getContext('2d');
+let chainAnim = null;
+let chainPhase = 'idle'; // idle | radiation | detector | amp | cfd | and | result
+let chainIsCoincidence = true;
+let chainT = 0; // animation time 0..1 within phase
+let chainPhaseStart = 0;
+const PHASE_DUR = { radiation:280, detector:260, amp:360, cfd:360, and:300, result:500 };
+const phaseOrder = ['radiation','detector','amp','cfd','and','result'];
+
+// Layout: computed from canvas width
+function chainLayout(w, h) {
+  const pad = 28, bw = Math.min(108, (w - pad*2 - 5*30) / 6), bh = 52;
+  const rowA = h * 0.22, rowB = h * 0.67, rowMid = h * 0.445;
+  const cols = [];
+  for(let i=0;i<6;i++) cols.push(pad + i*(bw+30) + bw/2);
+  // stages: 0=DetA, 1=DetB, 2=AmpA, 3=AmpB, 4=CFDA, 5=CFDB, 6=AND, 7=Coinc, 8=MCA
+  const s = (cx, cy) => ({cx, cy, bw, bh, x: cx-bw/2, y: cy-bh/2});
+  return {
+    detA:  s(cols[0], rowA),
+    detB:  s(cols[0], rowB),
+    ampA:  s(cols[1], rowA),
+    ampB:  s(cols[1], rowB),
+    cfdA:  s(cols[2], rowA),
+    cfdB:  s(cols[2], rowB),
+    and:   s(cols[3], rowMid),
+    coin:  s(cols[4], rowMid),
+    mca:   s(cols[5], rowMid),
+    rowA, rowB, rowMid, bw, bh, pad, w, h
+  };
+}
+
+// State for glow/highlight of each stage
+let stageGlow = { detA:0, detB:0, ampA:0, ampB:0, cfdA:0, cfdB:0, and:0, coin:0, mca:0 };
+// Traveling pulses: {x, y, targetX, targetY, progress, color, shape}
+let particles = [];
+// Mini-waveforms drawn inside blocks
+let waveStates = { ampA: 0, ampB: 0, cfdA: 0, cfdB: 0 };
+
+function resizeChain() {
+  const dpr = window.devicePixelRatio || 1;
+  const w = CC.parentElement.offsetWidth || 800;
+  const h = Math.max(260, Math.min(340, w * 0.38));
+  CC.style.height = h + 'px';
+  CC.width = w * dpr; CC.height = h * dpr;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  drawChain();
+}
+
+function easeInOut(t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; }
+function lerp(a,b,t) { return a + (b-a)*t; }
+
+// Draw a mini waveform inside a box
+function drawMiniWave(bx, by, bw, bh, type, phase, color) {
+  cx.save();
+  cx.beginPath();
+  cx.rect(bx+4, by+4, bw-8, bh-8);
+  cx.clip();
+  const midY = by + bh/2 + 4;
+  const ww = bw - 12, wx = bx + 6;
+  cx.strokeStyle = color; cx.lineWidth = 1.5; cx.beginPath();
+  if(type === 'raw') {
+    // small noisy analog pulse
+    for(let i=0;i<=40;i++){
+      const t = i/40, x = wx + t*ww;
+      const amp = 14 * Math.exp(-Math.pow((t-0.55)*4,2)) * phase;
+      const noise = (Math.sin(i*7.3)*0.8 + Math.sin(i*3.1)*0.5) * (1-phase*0.5);
+      const y = midY - amp - noise;
+      i===0 ? cx.moveTo(x,y) : cx.lineTo(x,y);
+    }
+  } else if(type === 'amp') {
+    // amplified smooth gaussian
+    for(let i=0;i<=40;i++){
+      const t = i/40, x = wx + t*ww;
+      const amp = 22 * Math.exp(-Math.pow((t-0.55)*3.5,2)) * phase;
+      const y = midY - amp;
+      i===0 ? cx.moveTo(x,y) : cx.lineTo(x,y);
+    }
+  } else if(type === 'logic') {
+    // digital NIM pulse: flat, then step up, then step down
+    const rise = 0.35, fall = 0.65;
+    cx.moveTo(wx, midY);
+    cx.lineTo(wx + rise*ww, midY);
+    cx.lineTo(wx + rise*ww, midY - 18*phase);
+    cx.lineTo(wx + fall*ww, midY - 18*phase);
+    cx.lineTo(wx + fall*ww, midY);
+    cx.lineTo(wx + ww, midY);
+  }
+  cx.stroke();
+  cx.restore();
+}
+
+// Draw a rounded rect with glow
+function drawBlock(b, label, sublabel, baseColor, glowAmt, extraStroke) {
+  const gc = cx;
+  // Glow
+  if(glowAmt > 0) {
+    gc.save();
+    gc.shadowColor = baseColor;
+    gc.shadowBlur = 18 * glowAmt;
+    gc.strokeStyle = baseColor;
+    gc.lineWidth = 2 * glowAmt;
+    gc.beginPath();
+    gc.roundRect(b.x, b.y, b.bw, b.bh, 8);
+    gc.stroke();
+    gc.restore();
+  }
+  // Fill
+  gc.fillStyle = `rgba(13,30,53,${0.7 + glowAmt*0.3})`;
+  gc.beginPath(); gc.roundRect(b.x, b.y, b.bw, b.bh, 8); gc.fill();
+  // Border
+  gc.strokeStyle = glowAmt > 0.05 ? baseColor : (extraStroke || '#1e3a5f');
+  gc.lineWidth = glowAmt > 0.05 ? 1.5 + glowAmt : 1.2;
+  gc.beginPath(); gc.roundRect(b.x, b.y, b.bw, b.bh, 8); gc.stroke();
+  // Label
+  gc.fillStyle = glowAmt > 0.1 ? '#fff' : '#93c5fd';
+  gc.font = `bold ${Math.max(7, b.bw*0.085)}px Space Mono`;
+  gc.textAlign = 'center';
+  gc.fillText(label, b.cx, b.cy - 6);
+  if(sublabel) {
+    gc.fillStyle = '#64748b'; gc.font = `${Math.max(6.5, b.bw*0.075)}px DM Sans`;
+    gc.fillText(sublabel, b.cx, b.cy + 9);
+  }
+}
+
+// Draw AND gate shape
+function drawANDGate(b, glowAmt, fired) {
+  const x = b.x, y = b.y, w = b.bw, h = b.bh;
+  const color = fired ? '#10b981' : '#f59e0b';
+  if(glowAmt > 0) {
+    cx.save(); cx.shadowColor = color; cx.shadowBlur = 22*glowAmt; cx.strokeStyle=color; cx.lineWidth=2;
+    cx.beginPath();
+    cx.moveTo(x, y); cx.lineTo(x, y+h);
+    cx.lineTo(x+w*0.55, y+h);
+    cx.bezierCurveTo(x+w*1.05, y+h, x+w*1.05, y, x+w*0.55, y);
+    cx.lineTo(x, y); cx.stroke(); cx.restore();
+  }
+  cx.fillStyle = glowAmt > 0.1 ? (fired ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)') : 'rgba(30,58,95,0.8)';
+  cx.beginPath();
+  cx.moveTo(x, y); cx.lineTo(x, y+h);
+  cx.lineTo(x+w*0.55, y+h);
+  cx.bezierCurveTo(x+w*1.05, y+h, x+w*1.05, y, x+w*0.55, y);
+  cx.lineTo(x, y); cx.fill();
+  cx.strokeStyle = color; cx.lineWidth = 1.5+glowAmt*1.5;
+  cx.beginPath();
+  cx.moveTo(x, y); cx.lineTo(x, y+h);
+  cx.lineTo(x+w*0.55, y+h);
+  cx.bezierCurveTo(x+w*1.05, y+h, x+w*1.05, y, x+w*0.55, y);
+  cx.lineTo(x, y); cx.stroke();
+  cx.fillStyle = glowAmt>0.1?'#fff':color;
+  cx.font = `bold ${Math.max(7,b.bw*0.085)}px Space Mono`;
+  cx.textAlign='center'; cx.fillText('AND', b.cx - b.bw*0.08, b.cy + 4);
+}
+
+// Draw arrow between two points
+function drawArrow(x1,y1,x2,y2,color,alpha,width) {
+  cx.save(); cx.globalAlpha = alpha; cx.strokeStyle = color; cx.lineWidth = width||1.5;
+  cx.beginPath(); cx.moveTo(x1,y1); cx.lineTo(x2,y2); cx.stroke();
+  // arrowhead
+  const angle = Math.atan2(y2-y1,x2-x1);
+  const al = 7;
+  cx.fillStyle = color;
+  cx.beginPath();
+  cx.moveTo(x2, y2);
+  cx.lineTo(x2 - al*Math.cos(angle-0.4), y2 - al*Math.sin(angle-0.4));
+  cx.lineTo(x2 - al*Math.cos(angle+0.4), y2 - al*Math.sin(angle+0.4));
+  cx.closePath(); cx.fill();
+  cx.restore();
+}
+
+// Draw animated particle along a path
+function drawParticles(l) {
+  particles.forEach(p => {
+    const x = lerp(p.x1, p.x2, p.t);
+    const y = lerp(p.y1, p.y2, p.t);
+    cx.save();
+    cx.shadowColor = p.color; cx.shadowBlur = 14;
+    cx.fillStyle = p.color;
+    cx.beginPath(); cx.arc(x, y, p.r||4, 0, Math.PI*2); cx.fill();
+    // trail
+    for(let i=1;i<=4;i++){
+      const tt = Math.max(0, p.t - i*0.04);
+      const tx = lerp(p.x1, p.x2, tt), ty = lerp(p.y1, p.y2, tt);
+      cx.globalAlpha = (1-i/5)*0.5;
+      cx.beginPath(); cx.arc(tx, ty, (p.r||4)*(1-i*0.15), 0, Math.PI*2); cx.fill();
+    }
+    cx.restore();
+  });
+}
+
+// Draw radiation "rays" hitting detectors
+function drawRadiation(l, t) {
+  ['detA','detB'].forEach((d,i) => {
+    const b = l[d];
+    const numRays = 4;
+    for(let r=0;r<numRays;r++){
+      const angle = (r/numRays)*Math.PI*0.9 + (i===0?Math.PI*0.55:Math.PI*1.05);
+      const rayLen = 28 * t;
+      const sx = b.cx - Math.cos(angle)*rayLen*1.2;
+      const sy = b.cy - Math.sin(angle)*rayLen*1.2;
+      cx.save();
+      cx.strokeStyle = '#f59e0b';
+      cx.lineWidth = 1.5;
+      cx.globalAlpha = t * 0.9;
+      cx.shadowColor = '#f59e0b'; cx.shadowBlur = 8;
+      cx.beginPath(); cx.moveTo(sx, sy); cx.lineTo(b.cx, b.cy); cx.stroke();
+      // arrowhead at detector
+      cx.fillStyle = '#f59e0b';
+      cx.beginPath(); cx.arc(b.cx, b.cy, 3*t, 0, Math.PI*2); cx.fill();
+      cx.restore();
+    }
+  });
+}
+
+function drawChain() {
+  const w = CC.offsetWidth || 800;
+  const h = parseInt(CC.style.height) || 280;
+  const l = chainLayout(w, h);
+  cx.clearRect(0,0,w,h);
+  cx.fillStyle='#050d18'; cx.fillRect(0,0,w,h);
+
+  // ── draw all static arrows (dim) ──
+  const dimA = 0.18;
+  // Det → Amp
+  drawArrow(l.detA.x+l.bw, l.detA.cy, l.ampA.x, l.ampA.cy, '#3b82f6', dimA);
+  drawArrow(l.detB.x+l.bw, l.detB.cy, l.ampB.x, l.ampB.cy, '#3b82f6', dimA);
+  // Amp → CFD
+  drawArrow(l.ampA.x+l.bw, l.ampA.cy, l.cfdA.x, l.cfdA.cy, '#3b82f6', dimA);
+  drawArrow(l.ampB.x+l.bw, l.ampB.cy, l.cfdB.x, l.cfdB.cy, '#3b82f6', dimA);
+  // CFD → AND
+  drawArrow(l.cfdA.x+l.bw, l.cfdA.cy, l.and.x, l.and.cy-l.bh*0.25, '#3b82f6', dimA);
+  drawArrow(l.cfdB.x+l.bw, l.cfdB.cy, l.and.x, l.and.cy+l.bh*0.25, '#3b82f6', dimA);
+  // AND → Coin
+  drawArrow(l.and.x+l.bw, l.and.cy, l.coin.x, l.coin.cy, '#f59e0b', dimA);
+  // Coin → MCA
+  drawArrow(l.coin.x+l.bw, l.coin.cy, l.mca.x, l.mca.cy, '#10b981', dimA);
+
+  // ── draw blocks ──
+  drawBlock(l.detA, 'DETECTOR A', 'NaI / HPGe', '#3b82f6', stageGlow.detA, '#1e3a5f');
+  drawBlock(l.detB, 'DETECTOR B', 'NaI / HPGe', '#3b82f6', stageGlow.detB, '#1e3a5f');
+  drawBlock(l.ampA, 'AMPLIFIER', 'Preamp+Shaper', '#8b5cf6', stageGlow.ampA);
+  drawBlock(l.ampB, 'AMPLIFIER', 'Preamp+Shaper', '#8b5cf6', stageGlow.ampB);
+  drawBlock(l.cfdA, 'CFD', 'Discriminator', '#06b6d4', stageGlow.cfdA);
+  drawBlock(l.cfdB, 'CFD', 'Discriminator', '#06b6d4', stageGlow.cfdB);
+  drawANDGate(l.and, stageGlow.and, chainIsCoincidence);
+  drawBlock(l.coin, 'COINCIDENCE', 'Unit / Δt', '#f59e0b', stageGlow.coin, '#7c3aed');
+  drawBlock(l.mca, chainIsCoincidence?'MCA / DAQ':'DISCARD', chainIsCoincidence?'Record':'Rejected', chainIsCoincidence?'#10b981':'#ef4444', stageGlow.mca);
+
+  // ── inline waveforms ──
+  if(stageGlow.detA > 0.1)  drawMiniWave(l.detA.x, l.detA.y, l.bw, l.bh, 'raw',  waveStates.ampA*0, '#f59e0b');
+  if(stageGlow.ampA > 0.1)  drawMiniWave(l.ampA.x, l.ampA.y, l.bw, l.bh, 'amp',  waveStates.ampA, '#a78bfa');
+  if(stageGlow.ampB > 0.1)  drawMiniWave(l.ampB.x, l.ampB.y, l.bw, l.bh, 'amp',  waveStates.ampB, '#a78bfa');
+  if(stageGlow.cfdA > 0.1)  drawMiniWave(l.cfdA.x, l.cfdA.y, l.bw, l.bh, 'logic', waveStates.cfdA, '#22d3ee');
+  if(stageGlow.cfdB > 0.1)  drawMiniWave(l.cfdB.x, l.cfdB.y, l.bw, l.bh, 'logic', waveStates.cfdB, '#22d3ee');
+
+  // ── radiation rays ──
+  if(chainPhase === 'radiation') drawRadiation(l, easeInOut(chainT));
+
+  // ── live bright arrows when signal flows ──
+  const phases = ['detector','amp','cfd','and','result'];
+  const pi = phaseOrder.indexOf(chainPhase);
+  if(pi >= 1) { // detector lit → det→amp arrow bright
+    drawArrow(l.detA.x+l.bw, l.detA.cy, l.ampA.x, l.ampA.cy, '#60a5fa', Math.min(1, stageGlow.detA+0.3), 2);
+    drawArrow(l.detB.x+l.bw, l.detB.cy, l.ampB.x, l.ampB.cy, '#60a5fa', Math.min(1, stageGlow.detB+0.3), 2);
+  }
+  if(pi >= 2) {
+    drawArrow(l.ampA.x+l.bw, l.ampA.cy, l.cfdA.x, l.cfdA.cy, '#a78bfa', Math.min(1, stageGlow.ampA+0.3), 2);
+    drawArrow(l.ampB.x+l.bw, l.ampB.cy, l.cfdB.x, l.cfdB.cy, '#a78bfa', Math.min(1, stageGlow.ampB+0.3), 2);
+  }
+  if(pi >= 3) {
+    drawArrow(l.cfdA.x+l.bw, l.cfdA.cy, l.and.x, l.and.cy-l.bh*0.25, '#22d3ee', Math.min(1,stageGlow.cfdA+0.3), 2);
+    drawArrow(l.cfdB.x+l.bw, l.cfdB.cy, l.and.x, l.and.cy+l.bh*0.25, '#22d3ee', Math.min(1,stageGlow.cfdB+0.3), 2);
+  }
+  if(pi >= 4) {
+    const c = chainIsCoincidence ? '#10b981' : '#ef4444';
+    drawArrow(l.and.x+l.bw, l.and.cy, l.coin.x, l.coin.cy, c, Math.min(1,stageGlow.and+0.3), 2.5);
+    drawArrow(l.coin.x+l.bw, l.coin.cy, l.mca.x, l.mca.cy, c, Math.min(1,stageGlow.coin+0.3), 2.5);
+  }
+
+  // ── particles ──
+  drawParticles(l);
+
+  // ── info labels on blocks during active phase ──
+  const infos = {
+    detector: ['Raw signal pulse created','charge → voltage'],
+    amp:      ['Signal amplified & shaped','noise filtered out'],
+    cfd:      ['Logic pulse output','triggers at fixed fraction'],
+    and:      [chainIsCoincidence ? 'Both pulses arrived — AND fires!' : 'Only one pulse — AND blocked!', ''],
+    result:   [chainIsCoincidence ? '✓ Event ACCEPTED → stored' : '✗ Event REJECTED → discarded', '']
+  };
+  const currentInfo = infos[chainPhase];
+  if(currentInfo) {
+    document.getElementById('chain-info').innerHTML =
+      `<span style="color:${chainPhase==='result'?(chainIsCoincidence?'#10b981':'#ef4444'):'#60a5fa'}">${currentInfo[0]}</span>` +
+      (currentInfo[1] ? ` <span style="color:#64748b">— ${currentInfo[1]}</span>` : '');
+  }
+}
+
+function chainFire(isCoincidence) {
+  chainIsCoincidence = isCoincidence;
+  chainReset();
+  stageGlow = { detA:0, detB:0, ampA:0, ampB:0, cfdA:0, cfdB:0, and:0, coin:0, mca:0 };
+  waveStates = { ampA:0, ampB:0, cfdA:0, cfdB:0 };
+  particles = [];
+  chainPhase = 'radiation';
+  chainPhaseStart = performance.now();
+  if(chainAnim) cancelAnimationFrame(chainAnim);
+  chainAnimate();
+  document.getElementById('chain-info').textContent = '☢ Radiation hits detectors...';
+}
+
+function chainReset() {
+  if(chainAnim) cancelAnimationFrame(chainAnim);
+  chainPhase = 'idle';
+  stageGlow = { detA:0, detB:0, ampA:0, ampB:0, cfdA:0, cfdB:0, and:0, coin:0, mca:0 };
+  waveStates = { ampA:0, ampB:0, cfdA:0, cfdB:0 };
+  particles = [];
+  document.getElementById('chain-info').textContent = '';
+  drawChain();
+}
+
+function chainAnimate() {
+  const now = performance.now();
+  const elapsed = now - chainPhaseStart;
+  const dur = PHASE_DUR[chainPhase] || 80;
+  chainT = Math.min(1, elapsed / dur);
+  const et = easeInOut(chainT);
+
+  // Update glow states per phase
+  switch(chainPhase) {
+    case 'radiation':
+      stageGlow.detA = et * 0.7;
+      stageGlow.detB = chainIsCoincidence ? et * 0.7 : et * 0.2;
+      break;
+    case 'detector':
+      stageGlow.detA = 0.7 + et*0.3;
+      stageGlow.detB = chainIsCoincidence ? 0.7+et*0.3 : 0.2;
+      waveStates.ampA = 0; waveStates.ampB = 0;
+      break;
+    case 'amp':
+      stageGlow.detA = Math.max(0, 1 - et*0.5);
+      stageGlow.detB = chainIsCoincidence ? Math.max(0, 1-et*0.5) : 0;
+      stageGlow.ampA = et;
+      stageGlow.ampB = chainIsCoincidence ? et : 0;
+      waveStates.ampA = et; waveStates.ampB = chainIsCoincidence ? et : 0;
+      break;
+    case 'cfd':
+      stageGlow.ampA = Math.max(0, 1-et*0.5);
+      stageGlow.ampB = chainIsCoincidence ? Math.max(0, 1-et*0.5) : 0;
+      stageGlow.cfdA = et;
+      stageGlow.cfdB = chainIsCoincidence ? et : 0;
+      waveStates.cfdA = et; waveStates.cfdB = chainIsCoincidence ? et : 0;
+      break;
+    case 'and':
+      stageGlow.cfdA = Math.max(0, 1-et*0.4);
+      stageGlow.cfdB = chainIsCoincidence ? Math.max(0,1-et*0.4) : 0;
+      stageGlow.and = et;
+      break;
+    case 'result':
+      stageGlow.and = Math.max(0, 1-et*0.3);
+      stageGlow.coin = Math.min(1, et*2);
+      stageGlow.mca = chainIsCoincidence ? Math.max(0, et*2-1) : Math.max(0, et*2-1);
+      break;
+  }
+
+  drawChain();
+
+  if(chainT < 1) {
+    chainAnim = requestAnimationFrame(chainAnimate);
+  } else {
+    // advance to next phase
+    const idx = phaseOrder.indexOf(chainPhase);
+    if(idx < phaseOrder.length-1) {
+      chainPhase = phaseOrder[idx+1];
+      chainPhaseStart = now;
+      chainAnim = requestAnimationFrame(chainAnimate);
+    } else {
+      chainPhase = 'idle';
+      // final glow decay
+      let decayT = 0;
+      function decay(){
+        decayT += 0.03;
+        if(decayT < 1){
+          const f = 1-decayT;
+          if(!chainIsCoincidence) {
+            stageGlow.mca = f*0.8;
+            stageGlow.coin = f*0.6;
+          }
+          drawChain();
+          chainAnim = requestAnimationFrame(decay);
+        }
+      }
+      setTimeout(decay, 1200);
+    }
+  }
+}
+
+// init chain
+resizeChain();
+window.addEventListener('resize', resizeChain);
+
+// ─── BLOCK INFO DATA ───
+const blockInfo = {
+  detA: {
+    icon: '🔭', title: 'DETECTOR A', accent: '#3b82f6',
+    body: `Radiation interacts with the <strong>detector material</strong> (e.g. NaI crystal or HPGe semiconductor).<br><br>
+           Energy deposited → ionisation or scintillation → converted to a small electrical charge by a photomultiplier tube (PMT) or FET.<br><br>
+           Output: a weak analog pulse whose <strong>amplitude ∝ deposited energy</strong> and whose timing carries the event time.`,
+    tags: ['NaI(Tl)', 'HPGe', 'BaF₂', 'Scintillator']
+  },
+  detB: {
+    icon: '🔭', title: 'DETECTOR B', accent: '#3b82f6',
+    body: `Identical in function to Detector A — monitors the <strong>same source from a different angle</strong> or position.<br><br>
+           In γ–γ coincidence experiments, two detectors are placed at 90° or 180° to catch cascade photons.<br><br>
+           Both detectors must fire within resolving time <strong>Δt</strong> for a coincidence to be recorded.`,
+    tags: ['NaI(Tl)', 'HPGe', '180° geometry', 'γ–γ']
+  },
+  ampA: {
+    icon: '📡', title: 'AMPLIFIER (Ch. A)', accent: '#8b5cf6',
+    body: `The raw detector pulse is tiny (~mV). The <strong>preamplifier</strong> integrates the charge and produces a step signal; the <strong>main amplifier</strong> shapes and amplifies it to ~volts.<br><br>
+           Gaussian shaping filters out high-frequency noise while preserving energy information.<br><br>
+           Output: a smooth <strong>Gaussian-shaped analog pulse</strong> — amplitude still encodes energy, timing still intact.`,
+    tags: ['Charge-sensitive preamp', 'Gaussian shaping', 'Gain ×50–1000']
+  },
+  ampB: {
+    icon: '📡', title: 'AMPLIFIER (Ch. B)', accent: '#8b5cf6',
+    body: `Same amplification chain as Channel A. Both channels are <strong>identical in gain and shaping time</strong> to ensure fair timing comparison at the CFD stage.<br><br>
+           Mismatch in shaping times between channels would introduce a systematic timing offset — a common source of error in coincidence setups.`,
+    tags: ['Symmetric channels', 'Shaping time', 'NIM standard']
+  },
+  cfdA: {
+    icon: '⚡', title: 'CFD — Channel A', accent: '#06b6d4',
+    body: `The <strong>Constant Fraction Discriminator</strong> converts the analog pulse into a precise digital logic pulse.<br><br>
+           A simple <em>leading-edge</em> discriminator triggers at a fixed voltage — large pulses trigger earlier than small ones (<strong>timing walk</strong>).<br><br>
+           The CFD triggers at a <strong>fixed fraction (~20–30%) of the pulse peak</strong>, independent of amplitude, achieving timing resolution down to <strong>~20 ps FWHM</strong>.`,
+    tags: ['Timing walk elimination', '~20 ps FWHM', 'NIM logic out']
+  },
+  cfdB: {
+    icon: '⚡', title: 'CFD — Channel B', accent: '#06b6d4',
+    body: `Produces the <strong>STOP signal</strong> for the TAC (Time-to-Amplitude Converter).<br><br>
+           Output is a clean digital NIM pulse: <strong>−0.8 V, 50 Ω</strong> standard logic level.<br><br>
+           The time difference between CFD-A output and CFD-B output is the quantity the TAC measures — this is the core of the coincidence timing measurement.`,
+    tags: ['STOP signal', 'NIM −0.8V', 'TAC input']
+  },
+  and: {
+    icon: '🔀', title: 'AND GATE / Coincidence Unit', accent: '#f59e0b',
+    body: `The electronic heart of the coincidence technique. Fires its output <strong>only if both input pulses arrive within the resolving time Δt</strong>.<br><br>
+           Internally uses a monostable multivibrator: each input generates a rectangular gate of width Δt — the AND fires only when the two gates <strong>overlap in time</strong>.<br><br>
+           Also supports <strong>q-fold coincidence</strong> (require 3, 4… detectors), and the inverse <strong>anti-coincidence</strong> (veto) mode.`,
+    tags: ['Δt gate', 'Monostable', 'q-fold', 'Anti-coincidence veto']
+  },
+  coin: {
+    icon: '🎯', title: 'COINCIDENCE UNIT', accent: '#f59e0b',
+    body: `Receives the AND gate output and generates the <strong>coincidence timing signal</strong> used to gate the data acquisition system.<br><br>
+           Also outputs a <strong>TAC START/STOP</strong> signal so the timing spectrum can be built up event by event.<br><br>
+           In modern digital systems (FPGA-based), this stage is implemented in firmware with programmable Δt windows down to a few nanoseconds.`,
+    tags: ['TAC gate', 'FPGA-based', 'Programmable Δt']
+  },
+  mca: {
+    icon: '💾', title: 'MCA / DAQ', accent: '#10b981',
+    body: `The <strong>Multi-Channel Analyser</strong> sorts accepted pulses into energy bins — building up the coincidence energy spectrum.<br><br>
+           Each accepted event stores: energy of pulse A, energy of pulse B, and the time difference Δt from the TAC.<br><br>
+           In large experiments (CERN), DAQ systems write to <strong>RAID storage at several GB/s</strong>, with online reconstruction running in parallel to flag interesting events.`,
+    tags: ['Energy spectrum', 'Event storage', 'Online reconstruction']
+  }
+};
+
+let tipVisible = false;
+
+function showChainTip(key, canvasX, canvasY) {
+  const data = blockInfo[key];
+  if(!data) return;
+  document.getElementById('ct-icon').textContent = data.icon;
+  document.getElementById('ct-title').textContent = data.title;
+  document.getElementById('ct-accent').style.background = data.accent;
+  document.getElementById('ct-body').innerHTML = data.body;
+  document.getElementById('ct-tags').innerHTML = data.tags.map(t=>`<span class="chain-tip-tag">${t}</span>`).join('');
+
+  const tip = document.getElementById('chain-tooltip');
+  tip.style.display = 'block';
+
+  // position: above/below/left/right depending on space
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const tw = 290, th = 260;
+  let left = canvasX + 16;
+  let top  = canvasY - 20;
+  if(left + tw > vw - 10) left = canvasX - tw - 10;
+  if(top + th > vh - 10) top = vh - th - 10;
+  if(top < 60) top = 60;
+  tip.style.left = left + 'px';
+  tip.style.top  = top  + 'px';
+
+  requestAnimationFrame(()=>{ tip.classList.add('show'); });
+  tipVisible = true;
+}
+
+function closeChainTip() {
+  const tip = document.getElementById('chain-tooltip');
+  tip.classList.remove('show');
+  tipVisible = false;
+}
+
+// ─── HIT TEST: which block was clicked? ───
+function chainHitTest(mx, my) {
+  const w = CC.offsetWidth || 800;
+  const h = parseInt(CC.style.height) || 280;
+  const l = chainLayout(w, h);
+  const dpr = window.devicePixelRatio || 1;
+  // mx, my are already in CSS pixels (from getBoundingClientRect)
+  const blocks = ['detA','detB','ampA','ampB','cfdA','cfdB','coin','mca'];
+  for(const k of blocks) {
+    const b = l[k];
+    if(mx >= b.x && mx <= b.x+b.bw && my >= b.y && my <= b.y+b.bh) return k;
+  }
+  // AND gate hit test (rough bounding box)
+  const a = l.and;
+  if(mx >= a.x && mx <= a.x+a.bw*1.05 && my >= a.y && my <= a.y+a.bh) return 'and';
+  return null;
+}
+
+CC.addEventListener('click', function(e) {
+  const rect = CC.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  const hit = chainHitTest(mx, my);
+  if(hit) {
+    showChainTip(hit, e.clientX, e.clientY);
+  } else {
+    closeChainTip();
+  }
+});
+
+// also update cursor to pointer when hovering a block
+CC.addEventListener('mousemove', function(e) {
+  const rect = CC.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  CC.style.cursor = chainHitTest(mx, my) ? 'pointer' : 'default';
+});
+
+// close tip if clicking outside
+document.addEventListener('click', function(e) {
+  const tip = document.getElementById('chain-tooltip');
+  if(tipVisible && !tip.contains(e.target) && e.target !== CC) {
+    closeChainTip();
+  }
+});
+
+// ─── INIT ───
+renderQuiz();
+calcAccidental();
+setTimeout(()=>{ resizePulseCanvas(); resizeChain(); }, 200);
+window.addEventListener('resize', ()=>{ resizePulseCanvas(); });
+</script>
+</body>
+</html>
