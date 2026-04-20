@@ -484,7 +484,7 @@
 <div class="container">
   <div class="sec-label">01 — Introduction</div>
   <h2 class="sec-title">Why Coincidence?</h2>
-  <p class="sec-desc">Nuclear experiments are drowned in background noise. These five demos show exactly why coincidence is the solution — from the atom up.</p>
+  <p class="sec-desc">Nuclear experiments are drowned in background noise. These four demos show exactly why coincidence is the solution.</p>
 
   <!-- INTRO TABS -->
   <div class="demo-tabs">
@@ -590,41 +590,191 @@
 </section>
 
 <!-- ──────────── SECTION 2: DETECTION ──────────── -->
-<section id="detection">
-<div class="container">
-  <div class="sec-label">02 — Radiation Detection</div>
-  <h2 class="sec-title">From Radiation to Electrical Pulse</h2>
-  <p class="sec-desc">Every coincidence system starts with a detector converting nuclear radiation into an electrical signal.</p>
+<!-- Replace the ENTIRE first <div class="card"> inside the .grid-2 in section #detection -->
+<!-- (the one with card-title "⚡ Signal Chain — Block Diagram")                          -->
 
-  <div class="grid-2" style="margin-bottom:2rem">
-    <div class="card">
-      <div class="card-title">⚡ Signal Chain — Block Diagram</div>
-      <canvas id="signal-chain-canvas" height="320" style="width:100%;border-radius:10px;display:block;background:#0a1628;margin-top:0.8rem;"></canvas>
-      <div style="margin-top:0.8rem;font-size:0.78rem;color:var(--muted);line-height:1.5;font-family:'Space Mono',monospace;">
-        <div style="margin-bottom:0.4rem;"><span style="color:#60a5fa;">● Incoming Radiation</span> hits the detector</div>
-        <div style="margin-bottom:0.4rem;"><span style="color:#8b5cf6;">● Energy Deposit</span> creates charge/light</div>
-        <div style="margin-bottom:0.4rem;"><span style="color:#06b6d4;">● PMT/Preamp</span> amplifies to mV signals</div>
-        <div><span style="color:#f59e0b;">● Output Pulse</span> with timing info</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">🔬 Detector Types & Performance</div>
-      <div style="margin-top:0.8rem;display:flex;flex-direction:column;gap:0.65rem;">
-        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
-          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">NaI(Tl) Scintillator</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ High efficiency | ✓ Fast timing (200 ps) | ~ 7% energy resolution</div>
-        </div>
-        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
-          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">HPGe Semiconductor</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ Excellent energy resolution (0.2%) | ✗ Slow timing | Requires 77K cooling</div>
-        </div>
-        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
-          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">BaF₂ Scintillator</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ Super-fast timing (100 ps) | ✓ Used in PET scanners | ~ 5% energy resolution</div>
-        </div>
-      </div>
-    </div>
+<div class="card" style="grid-column:1/-1">
+  <div class="card-title">⚡ Signal Chain — Block Diagram</div>
+
+  <svg id="sc-svg" viewBox="0 0 900 160" style="width:100%;display:block;margin-top:1rem;"
+       xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="sc-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- connectors -->
+    <line id="sc-c0" x1="146" y1="78" x2="196" y2="78" stroke="#1e3a5f" stroke-width="2" marker-end="url(#sc-a)"/>
+    <line id="sc-c1" x1="314" y1="78" x2="364" y2="78" stroke="#1e3a5f" stroke-width="2" marker-end="url(#sc-a)"/>
+    <line id="sc-c2" x1="482" y1="78" x2="532" y2="78" stroke="#1e3a5f" stroke-width="2" marker-end="url(#sc-a)"/>
+    <line id="sc-c3" x1="650" y1="78" x2="700" y2="78" stroke="#1e3a5f" stroke-width="2" marker-end="url(#sc-a)"/>
+
+    <!-- waveform hints below connectors -->
+    <g opacity="0.45" font-family="Space Mono,monospace">
+      <polyline points="158,128 162,128 164,114 166,128 172,128" fill="none" stroke="#60a5fa" stroke-width="1.3" stroke-linecap="round"/>
+      <text x="165" y="140" text-anchor="middle" font-size="7" fill="#60a5fa">charge</text>
+      <polyline points="325,128 329,128 333,118 338,110 343,118 347,128 351,128" fill="none" stroke="#a78bfa" stroke-width="1.3" stroke-linecap="round"/>
+      <text x="338" y="140" text-anchor="middle" font-size="7" fill="#a78bfa">analog</text>
+      <polyline points="493,128 497,128 502,116 507,106 512,116 517,128 521,128" fill="none" stroke="#34d399" stroke-width="1.3" stroke-linecap="round"/>
+      <text x="507" y="140" text-anchor="middle" font-size="7" fill="#34d399">shaped</text>
+      <polyline points="661,128 665,128 665,114 678,114 678,128 684,128" fill="none" stroke="#fbbf24" stroke-width="1.3" stroke-linecap="round"/>
+      <text x="673" y="140" text-anchor="middle" font-size="7" fill="#fbbf24">NIM</text>
+    </g>
+
+    <!-- blocks -->
+    <g id="sc-b0">
+      <rect x="8"   y="42" width="138" height="72" rx="9" fill="var(--card)" stroke="#1e3a5f" stroke-width="1.5"/>
+      <text x="77"  y="66" text-anchor="middle" font-family="Space Mono,monospace" font-size="11" font-weight="700" fill="#cbd5e1">Detector</text>
+      <text x="77"  y="81" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">NaI(Tl) / HPGe</text>
+      <text x="77"  y="96" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">γ-ray → charge</text>
+    </g>
+    <g id="sc-b1">
+      <rect x="196" y="42" width="118" height="72" rx="9" fill="var(--card)" stroke="#1e3a5f" stroke-width="1.5"/>
+      <text x="255" y="66" text-anchor="middle" font-family="Space Mono,monospace" font-size="11" font-weight="700" fill="#cbd5e1">Preamp</text>
+      <text x="255" y="81" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">charge → mV</text>
+      <text x="255" y="96" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">timing preserved</text>
+    </g>
+    <g id="sc-b2">
+      <rect x="364" y="42" width="118" height="72" rx="9" fill="var(--card)" stroke="#1e3a5f" stroke-width="1.5"/>
+      <text x="423" y="66" text-anchor="middle" font-family="Space Mono,monospace" font-size="11" font-weight="700" fill="#cbd5e1">Amplifier</text>
+      <text x="423" y="81" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">shape &amp; amplify</text>
+      <text x="423" y="96" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">mV → Volts</text>
+    </g>
+    <g id="sc-b3">
+      <rect x="532" y="42" width="118" height="72" rx="9" fill="var(--card)" stroke="#1e3a5f" stroke-width="1.5"/>
+      <text x="591" y="62" text-anchor="middle" font-family="Space Mono,monospace" font-size="11" font-weight="700" fill="#cbd5e1">CFD</text>
+      <text x="591" y="77" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">analog → logic</text>
+      <text x="591" y="92" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">fixes timing walk</text>
+      <text x="591" y="107" text-anchor="middle" font-family="DM Sans,sans-serif"  font-size="9"  fill="#64748b">NIM pulse out</text>
+    </g>
+    <g id="sc-b4">
+      <rect x="700" y="26" width="188" height="104" rx="9" fill="var(--card)" stroke="#1e3a5f" stroke-width="1.5"/>
+      <text x="794" y="52"  text-anchor="middle" font-family="Space Mono,monospace" font-size="11" font-weight="700" fill="#cbd5e1">TAC / MCA</text>
+      <text x="794" y="68"  text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">voltage ramp → Δt</text>
+      <text x="794" y="83"  text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">ADC → channel no.</text>
+      <text x="794" y="98"  text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">builds spectrum</text>
+      <text x="794" y="113" text-anchor="middle" font-family="DM Sans,sans-serif"   font-size="9"  fill="#64748b">event by event</text>
+    </g>
+
+    <!-- animated dot + ring -->
+    <circle id="sc-rng" cx="-30" cy="78" r="11" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0"/>
+    <circle id="sc-dot" cx="-30" cy="78" r="6"  fill="#3b82f6" opacity="0"/>
+  </svg>
+
+  <!-- info bar -->
+  <div id="sc-info" style="min-height:44px;margin-top:0.8rem;padding:0.65rem 1rem;border-radius:8px;
+    font-size:0.85rem;line-height:1.6;color:var(--muted);background:var(--bg3);
+    border:1px solid var(--border);transition:border-color .25s;">
+    Click <strong style="color:var(--accent2)">Next →</strong> to step through the signal chain.
   </div>
+
+  <!-- controls -->
+  <div style="display:flex;gap:0.6rem;align-items:center;margin-top:0.9rem;flex-wrap:wrap;">
+    <button class="demo-btn demo-btn-gray" id="sc-prev" onclick="scPrev()" disabled>← Prev</button>
+    <button class="demo-btn demo-btn-blue" id="sc-next" onclick="scNext()">Next →</button>
+    <button class="demo-btn demo-btn-gray" onclick="scReset()" style="opacity:.7">↺ Reset</button>
+    <span id="sc-lbl" style="margin-left:auto;font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);">0 / 5</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const BLOCKS=[
+    {id:'sc-b0',cx:77,  cy:78,col:'#60a5fa',
+     title:'① Detector — NaI(Tl) / HPGe',
+     desc:'The γ-ray enters the detector crystal and deposits energy. In NaI(Tl) this produces visible light (scintillation) picked up by a PMT; in HPGe it creates electron-hole pairs directly. Either way the output is a tiny charge pulse whose amplitude is proportional to the γ-ray energy.'},
+    {id:'sc-b1',cx:255, cy:78,col:'#a78bfa',
+     title:'② Preamplifier',
+     desc:'Integrates the detector charge and converts it to a millivolt-level voltage step. A charge-sensitive design minimises noise while preserving the precise arrival time of the original event — crucial for coincidence timing.'},
+    {id:'sc-b2',cx:423, cy:78,col:'#34d399',
+     title:'③ Amplifier — Gaussian Shaping',
+     desc:'Amplifies mV → Volts with gain typically ×50–1000. CR-RC Gaussian shaping simultaneously filters high-frequency noise and removes the long preamplifier tail, leaving a clean symmetric peak whose height encodes deposited energy.'},
+    {id:'sc-b3',cx:591, cy:78,col:'#fbbf24',
+     title:'④ CFD — Constant Fraction Discriminator',
+     desc:'Converts the shaped analog pulse to a fast NIM digital pulse (−0.8 V, 50 Ω). A simple leading-edge discriminator suffers "timing walk" — large pulses cross threshold earlier. The CFD fires at a fixed fraction (~30%) of the peak height, eliminating walk and achieving ~20 ps timing resolution.'},
+    {id:'sc-b4',cx:794, cy:78,col:'#f87171',
+     title:'⑤ TAC / MCA — Time-to-Amplitude Converter',
+     desc:'The TAC linearly charges a capacitor from START (Det. A fires) to STOP (Det. B fires). Output voltage ∝ Δt. The ADC converts this to a channel number, and the MCA accumulates thousands of events to build the full coincidence timing spectrum — Gaussian true-coincidence peak on a flat accidental background.'},
+  ];
+  const CWPS=[[146,78,196,78],[314,78,364,78],[482,78,532,78],[650,78,700,78]];
+  const CONS=['sc-c0','sc-c1','sc-c2','sc-c3'];
+
+  const dot=document.getElementById('sc-dot');
+  const rng=document.getElementById('sc-rng');
+  const info=document.getElementById('sc-info');
+  const lbl=document.getElementById('sc-lbl');
+  const prevBtn=document.getElementById('sc-prev');
+  const nextBtn=document.getElementById('sc-next');
+
+  let cur=-1, raf=null;
+
+  function lerp(a,b,t){return a+(b-a)*t;}
+  function eio(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
+
+  function resetAll(){
+    BLOCKS.forEach(b=>{
+      const r=document.getElementById(b.id).querySelector('rect');
+      r.setAttribute('stroke','#1e3a5f');r.setAttribute('stroke-width','1.5');
+    });
+    CONS.forEach(id=>document.getElementById(id).setAttribute('stroke','#1e3a5f'));
+  }
+
+  function showBlock(i){
+    resetAll();
+    const b=BLOCKS[i];
+    const r=document.getElementById(b.id).querySelector('rect');
+    r.setAttribute('stroke',b.col);r.setAttribute('stroke-width','2.8');
+    for(let k=0;k<i;k++) document.getElementById(CONS[k]).setAttribute('stroke',BLOCKS[k].col);
+    dot.setAttribute('cx',b.cx);dot.setAttribute('cy',b.cy);
+    dot.setAttribute('fill',b.col);dot.setAttribute('opacity','1');
+    rng.setAttribute('cx',b.cx);rng.setAttribute('cy',b.cy);
+    rng.setAttribute('stroke',b.col);rng.setAttribute('opacity','0.45');
+    info.style.borderColor=b.col+'55';
+    info.innerHTML=`<span style="color:${b.col};font-weight:700">${b.title}</span><br>${b.desc}`;
+    lbl.textContent=`${i+1} / 5`;
+    prevBtn.disabled=(i===0);
+    nextBtn.disabled=(i===BLOCKS.length-1);
+    nextBtn.textContent=(i===BLOCKS.length-1)?'✓ Done':'Next →';
+  }
+
+  function animate(x1,y1,x2,y2,col,done){
+    if(raf)cancelAnimationFrame(raf);
+    const DUR=480,t0=performance.now();
+    function step(ts){
+      const p=Math.min((ts-t0)/DUR,1),e=eio(p);
+      [dot,rng].forEach(el=>{el.setAttribute('cx',lerp(x1,x2,e));el.setAttribute('cy',lerp(y1,y2,e));});
+      dot.setAttribute('fill',col);dot.setAttribute('opacity','1');
+      rng.setAttribute('stroke',col);rng.setAttribute('opacity','0.4');
+      if(p<1){raf=requestAnimationFrame(step);}else{raf=null;done();}
+    }
+    raf=requestAnimationFrame(step);
+  }
+
+  window.scNext=function(){
+    if(raf)return;
+    nextBtn.disabled=true;prevBtn.disabled=true;
+    if(cur===-1){cur=0;showBlock(0);return;}
+    const wp=CWPS[cur];
+    const fromB=BLOCKS[cur];
+    animate(fromB.cx,fromB.cy,wp[2],wp[3],'#3b82f6',()=>{cur++;showBlock(cur);});
+  };
+  window.scPrev=function(){
+    if(raf)return;
+    if(cur<=0)return;
+    cur--;showBlock(cur);
+  };
+  window.scReset=function(){
+    if(raf){cancelAnimationFrame(raf);raf=null;}
+    cur=-1;resetAll();
+    dot.setAttribute('opacity','0');rng.setAttribute('opacity','0');
+    info.style.borderColor='';
+    info.innerHTML='Click <strong style="color:var(--accent2)">Next →</strong> to step through the signal chain.';
+    lbl.textContent='0 / 5';
+    prevBtn.disabled=true;nextBtn.disabled=false;nextBtn.textContent='Next →';
+  };
+})();
+</script>
 
   <!-- LIVE PULSE DEMO -->
   <div id="pulse-demo" style="animation:chainSlideIn 0.6s ease forwards;opacity:0;animation-delay:1.2s;">
@@ -696,7 +846,6 @@
     <button class="dtab" onclick="switchTab(1)">② Timing Walk</button>
     <button class="dtab" onclick="switchTab(2)">③ Spectrum Builder</button>
     <button class="dtab" onclick="switchTab(3)">④ Δt Tuner</button>
-    <button class="dtab" onclick="switchTab(4)">⑤ NIM vs FPGA</button>
   </div>
 
   <!-- ═══ TAB 0: TAC STEP-BY-STEP ═══ -->
@@ -764,28 +913,6 @@
       </div>
     </div>
   </div>
-
-  <!-- ═══ TAB 4: NIM vs FPGA ═══ -->
-  <div class="tab-panel" id="tab4">
-    <div class="timing-card">
-      <div class="timing-label">🔢 NIM vs FPGA — Old hardware vs modern digital timing</div>
-      <button class="demo-btn demo-btn-blue" onclick="nimFire()" style="margin-bottom:1rem;">▶ Send Signal Through Both</button>
-      <canvas id="nim-canvas" height="300" style="width:100%;border-radius:8px;display:block;"></canvas>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin-top:1rem;">
-        <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:0.9rem;">
-          <div style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--gold);margin-bottom:0.4rem;">NIM / CAMAC HARDWARE</div>
-          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;">Discrete modules in a crate. Each stage (preamp → amp → CFD → TAC → ADC) is a separate physical box connected by coaxial cables. Reliable, well-understood — but bulky, expensive per channel, and limited to one time interval per START pulse.</div>
-        </div>
-        <div style="background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:0.9rem;">
-          <div style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--accent2);margin-bottom:0.4rem;">FPGA DIGITAL TDC</div>
-          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;">All logic implemented in programmable firmware. Handles hundreds of channels simultaneously. Δt window is software-configurable in nanoseconds. Dead time approaches zero. Resolution ~13 ps demonstrated. Used in all modern large-scale experiments.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-</section>
 
 <!-- ──────────── SECTION 5: ACCIDENTALS ──────────── -->
 <section id="accidentals">
