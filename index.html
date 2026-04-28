@@ -484,7 +484,7 @@
 <div class="container">
   <div class="sec-label">01 — Introduction</div>
   <h2 class="sec-title">Why Coincidence?</h2>
-  <p class="sec-desc">Nuclear experiments are drowned in background noise. These five demos show exactly why coincidence is the solution — from the atom up.</p>
+  <p class="sec-desc">Nuclear experiments are drowned in background noise. These four demos show exactly why coincidence is the solution.</p>
 
   <!-- INTRO TABS -->
   <div class="demo-tabs">
@@ -607,38 +607,6 @@
         <div><span style="color:#f59e0b;">● Output Pulse</span> with timing info</div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">🔬 Detector Types & Performance</div>
-      <div style="margin-top:0.8rem;display:flex;flex-direction:column;gap:0.65rem;">
-        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
-          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">NaI(Tl) Scintillator</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ High efficiency | ✓ Fast timing (200 ps) | ~ 7% energy resolution</div>
-        </div>
-        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
-          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">HPGe Semiconductor</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ Excellent energy resolution (0.2%) | ✗ Slow timing | Requires 77K cooling</div>
-        </div>
-        <div class="chain-step" style="background:var(--bg3);border-radius:8px;padding:0.65rem 0.9rem;">
-          <div style="font-weight:600;color:var(--white);font-size:0.88rem;">BaF₂ Scintillator</div>
-          <div style="color:var(--muted);font-size:0.8rem;margin-top:0.2rem;">✓ Super-fast timing (100 ps) | ✓ Used in PET scanners | ~ 5% energy resolution</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- LIVE PULSE DEMO -->
-  <div id="pulse-demo" style="animation:chainSlideIn 0.6s ease forwards;opacity:0;animation-delay:1.2s;">
-    <div style="font-family:'Space Mono',monospace;font-size:0.78rem;color:var(--accent2);margin-bottom:0.8rem;letter-spacing:0.08em;">⚡ LIVE PULSE SIMULATOR</div>
-    <canvas id="pulse-canvas" height="200"></canvas>
-    <div class="demo-controls">
-      <button class="demo-btn demo-btn-blue" onclick="firePulseA()">Fire Detector A</button>
-      <button class="demo-btn demo-btn-green" onclick="firePulseB()">Fire Detector B</button>
-      <button class="demo-btn demo-btn-gray" onclick="resetPulses()">Reset</button>
-      <span class="demo-label">Δt window:</span>
-      <input type="range" min="20" max="200" value="80" id="dt-slider" style="width:120px" oninput="updateDt(this.value)">
-      <span id="dt-val" style="font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--gold)">80 ns</span>
-      <div id="coincidence-status" class="status-box">Waiting for pulses...</div>
-    </div>
   </div>
 </div>
 </section>
@@ -672,13 +640,6 @@
         The CFD triggers at a <span class="hl-gold">fixed fraction</span> of the pulse peak (typically 20–30%), independent of amplitude. This achieves timing resolutions of <span class="hl-green">~20 ps FWHM</span>.
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">🚫 Anti-Coincidence (Veto)</div>
-      <div class="card-text" style="margin-top:0.5rem;line-height:1.7;">
-        The inverse of coincidence — an event is <span class="hl">rejected</span> if a veto detector fires simultaneously.<br><br>
-        Used to reject cosmic muons in underground detectors, bremsstrahlung events in beta spectroscopy, and Compton-scattered photons. Example: the <span class="hl-gold">COS-B satellite</span> used anti-coincidence plastic scintillators to veto charged particle backgrounds in gamma-ray astronomy.
-      </div>
-    </div>
   </div>
 </div>
 </section>
@@ -688,7 +649,7 @@
 <div class="container">
   <div class="sec-label">04 — Timing Techniques</div>
   <h2 class="sec-title">Resolving Time &amp; the TAC</h2>
-  <p class="sec-desc">Five interactive demos — explore every layer of coincidence timing from capacitor charging to full spectrum building.</p>
+  <p class="sec-desc">Four interactive demos — explore every layer of coincidence timing from capacitor charging to full spectrum building.</p>
 
   <!-- ═══ DEMO TABS ═══ -->
   <div class="demo-tabs">
@@ -696,7 +657,6 @@
     <button class="dtab" onclick="switchTab(1)">② Timing Walk</button>
     <button class="dtab" onclick="switchTab(2)">③ Spectrum Builder</button>
     <button class="dtab" onclick="switchTab(3)">④ Δt Tuner</button>
-    <button class="dtab" onclick="switchTab(4)">⑤ NIM vs FPGA</button>
   </div>
 
   <!-- ═══ TAB 0: TAC STEP-BY-STEP ═══ -->
@@ -765,25 +725,6 @@
     </div>
   </div>
 
-  <!-- ═══ TAB 4: NIM vs FPGA ═══ -->
-  <div class="tab-panel" id="tab4">
-    <div class="timing-card">
-      <div class="timing-label">🔢 NIM vs FPGA — Old hardware vs modern digital timing</div>
-      <button class="demo-btn demo-btn-blue" onclick="nimFire()" style="margin-bottom:1rem;">▶ Send Signal Through Both</button>
-      <canvas id="nim-canvas" height="300" style="width:100%;border-radius:8px;display:block;"></canvas>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;margin-top:1rem;">
-        <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:0.9rem;">
-          <div style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--gold);margin-bottom:0.4rem;">NIM / CAMAC HARDWARE</div>
-          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;">Discrete modules in a crate. Each stage (preamp → amp → CFD → TAC → ADC) is a separate physical box connected by coaxial cables. Reliable, well-understood — but bulky, expensive per channel, and limited to one time interval per START pulse.</div>
-        </div>
-        <div style="background:rgba(59,130,246,0.07);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:0.9rem;">
-          <div style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--accent2);margin-bottom:0.4rem;">FPGA DIGITAL TDC</div>
-          <div style="font-size:0.82rem;color:var(--muted);line-height:1.6;">All logic implemented in programmable firmware. Handles hundreds of channels simultaneously. Δt window is software-configurable in nanoseconds. Dead time approaches zero. Resolution ~13 ps demonstrated. Used in all modern large-scale experiments.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </div>
 </section>
 
@@ -801,7 +742,7 @@
     </div>
     <div class="card" style="border-color:rgba(239,68,68,0.3);">
       <div class="card-title" style="color:var(--red);">❌ Accidental Coincidence</div>
-      <div class="card-text" style="line-height:1.7;margin-top:0.5rem;">Two <span style="color:var(--red);font-weight:600;">unrelated events</span> randomly fall within Δt by pure chance. Their rate is determined by singles rates and the resolving window — purely statistical.</div>
+      <div class="card-text" style="line-height:1.7;margin-top:0.5rem;">Two unrelated events happen at nearly the same time just by chance. How often this happens depends on how frequently each detector records events and how big the time window is..</div>
     </div>
   </div>
 
@@ -921,7 +862,7 @@
 <div class="container">
   <div class="sec-label">07 — Large Scale Physics</div>
   <h2 class="sec-title">Coincidence at CERN's LHC</h2>
-  <p class="sec-desc">At the Large Hadron Collider, coincidence logic operates at a scale that would have been unimaginable to Bothe and Geiger in 1924.</p>
+  <p class="sec-desc">.</p>
 
   <div class="grid-3" style="margin-bottom:2rem;">
     <div class="card" style="border-color:rgba(239,68,68,0.3);">
@@ -1002,13 +943,13 @@
 </div>
 </section>
 
-<!-- ──────────── SECTION 9: REFERENCES ──────────── -->
+ <!-- ──────────── SECTION 9: REFERENCES ──────────── -->
 <section id="references" style="min-height:auto;padding-bottom:4rem;">
 <div class="container">
   <div class="sec-label">09 — References</div>
   <h2 class="sec-title">References</h2>
   <ul class="ref-list">
-    <li><div class="ref-num">1</div><div class="ref-text"><strong>Bothe, W. &amp; Geiger, H.</strong> (1924). Über das Wesen des Comptoneffekts. <em>Zeitschrift für Physik</em>, 26, 44–58. <a href="https://doi.org/10.1007/BF01327326" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1007/BF01327326</a></div></li>
+ 
     <li><div class="ref-num">2</div><div class="ref-text"><strong>ATLAS Collaboration.</strong> (2012). Observation of a new boson at a mass of 125 GeV with the ATLAS detector at the LHC. <em>Physics Letters B</em>, 716(1), 1–29. <a href="https://doi.org/10.1016/j.physletb.2012.08.020" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1016/j.physletb.2012.08.020</a></div></li>
     <li><div class="ref-num">3</div><div class="ref-text"><strong>CMS Collaboration.</strong> (2012). Observation of a new boson at mass near 125 GeV in pp collisions at √s = 7 and 8 TeV. <em>Physics Letters B</em>, 716(1), 30–61. <a href="https://doi.org/10.1016/j.physletb.2012.08.021" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1016/j.physletb.2012.08.021</a></div></li>
     <li><div class="ref-num">4</div><div class="ref-text"><strong>Cowan, C.L., Reines, F., Harrison, F.B., Kruse, H.W. &amp; McGuire, A.D.</strong> (1956). Detection of the Free Neutrino: A Confirmation. <em>Science</em>, 124(3212), 103–104. <a href="https://doi.org/10.1126/science.124.3212.103" target="_blank" rel="noopener noreferrer" style="color:var(--accent);text-decoration:underline;">https://doi.org/10.1126/science.124.3212.103</a></div></li>
@@ -1033,7 +974,8 @@
   </div>
 </footer>
 
-<script>
+<script> 
+
 // ─── STARS ───
 (function(){
   const c = document.getElementById('stars-canvas');
@@ -1074,21 +1016,22 @@ sections.forEach(s=>{ if(s.id!=='hero') observer.observe(s); else s.classList.ad
 
 // ─── PULSE SIMULATOR ───
 const pulseCanvas = document.getElementById('pulse-canvas');
-const pCtx = pulseCanvas.getContext('2d');
-let pulseA = null, pulseB = null;
-let dtWindow = 80;
+if (pulseCanvas) {
+  const pCtx = pulseCanvas.getContext('2d');
+  let pulseA = null, pulseB = null;
+  let dtWindow = 80;
 
-function resizePulseCanvas(){
-  pulseCanvas.width = pulseCanvas.offsetWidth * window.devicePixelRatio || 800;
-  pulseCanvas.height = 200 * window.devicePixelRatio || 200;
-  pCtx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
-  drawPulses();
-}
+  function resizePulseCanvas(){
+    pulseCanvas.width = pulseCanvas.offsetWidth * window.devicePixelRatio || 800;
+    pulseCanvas.height = 200 * window.devicePixelRatio || 200;
+    pCtx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+    drawPulses();
+  }
 
-function drawPulses(){
-  const w = pulseCanvas.offsetWidth || 800;
-  const h = 200;
-  pCtx.clearRect(0,0,w,h);
+  function drawPulses(){
+    const w = pulseCanvas.offsetWidth || 800;
+    const h = 200;
+    pCtx.clearRect(0,0,w,h);
 
   // background
   pCtx.fillStyle = '#050d18'; pCtx.fillRect(0,0,w,h);
@@ -1146,38 +1089,39 @@ function drawPulses(){
   if(pulseB !== null) drawPulse(pulseB, baseB, '#10b981', 't_B');
 
   // coincidence indicator
-  if(pulseA !== null && pulseB !== null){
-    const sep = Math.abs(pulseA - pulseB) / pxPerNs;
-    const accepted = sep <= dtWindow;
-    const midX = (pulseA+pulseB)/2;
-    pCtx.fillStyle = accepted ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.12)';
-    pCtx.fillRect(Math.min(pulseA,pulseB), 0, Math.abs(pulseA-pulseB), h);
-    pCtx.font = 'bold 13px DM Sans';
-    pCtx.fillStyle = accepted ? '#10b981' : '#ef4444';
-    pCtx.textAlign='center';
-    pCtx.fillText(accepted ? `✓ COINCIDENCE (${sep.toFixed(0)} ns)` : `✗ REJECTED (${sep.toFixed(0)} ns > Δt)`, midX, h/2);
-    pCtx.textAlign='left';
-    const statusEl = document.getElementById('coincidence-status');
-    statusEl.textContent = accepted ? `✓ ACCEPTED — Δt = ${sep.toFixed(1)} ns` : `✗ REJECTED — Δt = ${sep.toFixed(1)} ns (outside window)`;
-    statusEl.className = 'status-box ' + (accepted ? 'status-accept' : 'status-reject');
+    if(pulseA !== null && pulseB !== null){
+      const sep = Math.abs(pulseA - pulseB) / pxPerNs;
+      const accepted = sep <= dtWindow;
+      const midX = (pulseA+pulseB)/2;
+      pCtx.fillStyle = accepted ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.12)';
+      pCtx.fillRect(Math.min(pulseA,pulseB), 0, Math.abs(pulseA-pulseB), h);
+      pCtx.font = 'bold 13px DM Sans';
+      pCtx.fillStyle = accepted ? '#10b981' : '#ef4444';
+      pCtx.textAlign='center';
+      pCtx.fillText(accepted ? `✓ COINCIDENCE (${sep.toFixed(0)} ns)` : `✗ REJECTED (${sep.toFixed(0)} ns > Δt)`, midX, h/2);
+      pCtx.textAlign='left';
+      const statusEl = document.getElementById('coincidence-status');
+      statusEl.textContent = accepted ? `✓ ACCEPTED — Δt = ${sep.toFixed(1)} ns` : `✗ REJECTED — Δt = ${sep.toFixed(1)} ns (outside window)`;
+      statusEl.className = 'status-box ' + (accepted ? 'status-accept' : 'status-reject');
+    }
   }
-}
 
-function firePulseA(){
-  const w = pulseCanvas.offsetWidth;
-  pulseA = w*0.35 + (Math.random()-0.5)*60;
-  drawPulses();
-}
-function firePulseB(){
-  const w = pulseCanvas.offsetWidth;
-  pulseB = w*0.65 + (Math.random()-0.5)*60;
-  drawPulses();
-}
-function resetPulses(){ pulseA=null; pulseB=null; document.getElementById('coincidence-status').textContent='Waiting for pulses...'; document.getElementById('coincidence-status').className='status-box'; drawPulses(); }
-function updateDt(v){ dtWindow=parseInt(v); document.getElementById('dt-val').textContent=v+' ns'; drawPulses(); }
+  function firePulseA(){
+    const w = pulseCanvas.offsetWidth;
+    pulseA = w*0.35 + (Math.random()-0.5)*60;
+    drawPulses();
+  }
+  function firePulseB(){
+    const w = pulseCanvas.offsetWidth;
+    pulseB = w*0.65 + (Math.random()-0.5)*60;
+    drawPulses();
+  }
+  function resetPulses(){ pulseA=null; pulseB=null; document.getElementById('coincidence-status').textContent='Waiting for pulses...'; document.getElementById('coincidence-status').className='status-box'; drawPulses(); }
+  function updateDt(v){ dtWindow=parseInt(v); document.getElementById('dt-val').textContent=v+' ns'; drawPulses(); }
 
-window.addEventListener('resize', resizePulseCanvas);
-setTimeout(resizePulseCanvas, 100);
+  window.addEventListener('resize', resizePulseCanvas);
+  setTimeout(resizePulseCanvas, 100);
+}
 
 // ─── SIGNAL CHAIN ANIMATION ───
 const signalChainCanvas = document.getElementById('signal-chain-canvas');
@@ -1484,7 +1428,7 @@ function drawSignalChain(){
 drawSignalChain();
 
 // ═══════════════════════════════════════════════════
-// TIMING DEMOS — 5 interactive engines
+// TIMING DEMOS — 4 interactive engines
 // ═══════════════════════════════════════════════════
 
 function switchTab(i) {
@@ -1494,7 +1438,6 @@ function switchTab(i) {
   if(i===1) { setTimeout(()=>walkMode(currentWalkMode),80); }
   if(i===2) { setTimeout(sbDraw,80); }
   if(i===3) { setTimeout(updateDtTuner,80); }
-  if(i===4) { setTimeout(nimDraw,80); }
 }
 
 // ─── helper: setup canvas dpr ───
@@ -1928,128 +1871,15 @@ function erf(x){ // approximation
   return 1-p*Math.exp(-x*x)*(x<0?-1:1);
 }
 
-// ═══ DEMO 5 — NIM vs FPGA ═══
-const nimC = document.getElementById('nim-canvas');
-let nimAnimRaf=null, nimAnimStart=0, nimRunning=false;
-
-const NIM_STAGES  = ['Detector','Preamp','Shaper\nAmp','CFD','TAC','ADC','MCA'];
-const FPGA_STAGES = ['Detector','Input\nBuffer','FPGA\nDigital TDC','Event\nBuilder','DAQ\nStorage'];
-const NIM_COLORS  = ['#3b82f6','#8b5cf6','#8b5cf6','#06b6d4','#f59e0b','#f59e0b','#10b981'];
-const FPGA_COLORS = ['#3b82f6','#60a5fa','#a78bfa','#10b981','#10b981'];
-
-function nimDraw(progress){ // progress 0..1 for animation
-  const {ctx,w,h} = setupCanvas(nimC,300);
-  bg(ctx,w,h);
-
-  const rowH=h*0.42, gap=h*0.1;
-  const nimY=h*0.08, fpgaY=nimY+rowH+gap;
-
-  // Row labels
-  ctx.fillStyle='#f59e0b';ctx.font='bold 9px Space Mono';
-  ctx.fillText('NIM / CAMAC HARDWARE',8,nimY-6);
-  ctx.fillStyle='#60a5fa';
-  ctx.fillText('FPGA DIGITAL TDC',8,fpgaY-6);
-
-  // Timing labels
-  ctx.fillStyle='rgba(245,158,11,0.5)';ctx.font='8px Space Mono';
-  ctx.fillText('~1 µs dead time per event | fixed Δt | 1 channel',8,nimY+rowH+4);
-  ctx.fillStyle='rgba(96,165,250,0.5)';
-  ctx.fillText('~0 dead time | programmable Δt | 100s of channels',8,fpgaY+rowH+4);
-
-  function drawRow(stages, colors, y, rh, prog){
-    const n=stages.length;
-    const bw=(w-60)/(n), bh=rh*0.68, by=y+rh*0.16;
-    stages.forEach((s,i)=>{
-      const bx=30+i*bw+bw*0.08;
-      const active=prog!==undefined && prog>i/n;
-      const glow=active ? Math.min(1,(prog-i/n)*n) : 0;
-
-      // glow
-      if(glow>0.05){
-        ctx.save();ctx.shadowColor=colors[i];ctx.shadowBlur=16*glow;
-        ctx.strokeStyle=colors[i];ctx.lineWidth=2;
-        ctx.beginPath();ctx.roundRect(bx,by,bw*0.84,bh,7);ctx.stroke();
-        ctx.restore();
-      }
-      ctx.fillStyle=active?`rgba(${hexToRgb(colors[i])},${0.12+glow*0.15})`:'rgba(13,30,53,0.8)';
-      ctx.beginPath();ctx.roundRect(bx,by,bw*0.84,bh,7);ctx.fill();
-      ctx.strokeStyle=active?colors[i]:'#1e3a5f';ctx.lineWidth=1.2+glow;
-      ctx.beginPath();ctx.roundRect(bx,by,bw*0.84,bh,7);ctx.stroke();
-
-      // label (handle \n)
-      const lines=s.split('\n');
-      ctx.fillStyle=active?'#fff':'#64748b';
-      ctx.font=`${Math.max(7,bw*0.11)}px Space Mono`;ctx.textAlign='center';
-      lines.forEach((l,li)=>ctx.fillText(l,bx+bw*0.42,by+bh/2-(lines.length-1)*6+li*12));
-      ctx.textAlign='left';
-
-      // arrow
-      if(i<n-1){
-        const ax=bx+bw*0.84+2, ay=by+bh/2;
-        const col=active&&prog>(i+1)/n?colors[i]:'#1e3a5f';
-        ctx.strokeStyle=col;ctx.lineWidth=1.5;
-        ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+bw*0.12,ay);ctx.stroke();
-        ctx.fillStyle=col;ctx.beginPath();
-        ctx.moveTo(ax+bw*0.12,ay);ctx.lineTo(ax+bw*0.12-5,ay-3);ctx.lineTo(ax+bw*0.12-5,ay+3);ctx.fill();
-      }
-
-      // traveling dot
-      if(active&&glow>0&&glow<0.95&&i<n-1){
-        const dx=bx+bw*0.84+glow*bw*0.16, dy=by+bh/2;
-        ctx.save();ctx.shadowColor=colors[i];ctx.shadowBlur=12;
-        ctx.fillStyle=colors[i];ctx.beginPath();ctx.arc(dx,dy,4,0,Math.PI*2);ctx.fill();
-        ctx.restore();
-      }
-    });
-  }
-
-  const p=progress||0;
-  drawRow(NIM_STAGES,  NIM_COLORS,  nimY,  rowH, p);
-  drawRow(FPGA_STAGES, FPGA_COLORS, fpgaY, rowH, p);
-
-  // resolution comparison badge (appears at end)
-  if(p>0.85){
-    const alpha=Math.min(1,(p-0.85)/0.15);
-    ctx.globalAlpha=alpha;
-    ctx.fillStyle='rgba(245,158,11,0.1)';ctx.strokeStyle='rgba(245,158,11,0.4)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.roundRect(w-130,nimY+rowH*0.2,118,rowH*0.6,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#f59e0b';ctx.font='bold 9px Space Mono';ctx.textAlign='center';
-    ctx.fillText('~1–2 ns resolution',w-71,nimY+rowH*0.2+22);
-    ctx.fillStyle='rgba(96,165,250,0.1)';ctx.strokeStyle='rgba(96,165,250,0.4)';
-    ctx.beginPath();ctx.roundRect(w-130,fpgaY+rowH*0.2,118,rowH*0.6,8);ctx.fill();ctx.stroke();
-    ctx.fillStyle='#60a5fa';ctx.font='bold 9px Space Mono';
-    ctx.fillText('~13 ps resolution',w-71,fpgaY+rowH*0.2+22);
-    ctx.textAlign='left';ctx.globalAlpha=1;
-  }
-}
-
-function hexToRgb(hex){
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return `${r},${g},${b}`;
-}
-
-function nimFire(){
-  if(nimRunning) return;
-  nimRunning=true; nimAnimStart=performance.now();
-  function step(){
-    const t=Math.min(1,(performance.now()-nimAnimStart)/2600);
-    nimDraw(t);
-    if(t<1){ nimAnimRaf=requestAnimationFrame(step); }
-    else { nimRunning=false; }
-  }
-  step();
-}
-
 // init all demos
 setTimeout(()=>{
   tacAnimDraw();
   walkMode('led');
   sbDraw();
   updateDtTuner();
-  nimDraw(0);
 },300);
 window.addEventListener('resize',()=>{
-  tacAnimDraw(); walkMode(currentWalkMode); sbDraw(); updateDtTuner(); nimDraw(0);
+  tacAnimDraw(); walkMode(currentWalkMode); sbDraw(); updateDtTuner();
 });
 
 // ─── ACCIDENTAL CALCULATOR ───
